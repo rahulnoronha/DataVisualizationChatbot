@@ -1,0 +1,108 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "Hi",
+        "Hey",
+        "Hi there",
+        "Hey there",
+        "How are you",
+        "Is anyone there?",
+        "Hello",
+        "Good day",
+        "What's up"
+      ],
+      "responses": [
+        "Hey. I am a data visualization bot",
+        "Hello, thanks for visiting. I am a data visualization bot",
+        "Hi there, what can I do for you?  I am a data visualization bot",
+        "Hi there, how can I help? I am a data visualization bot"
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": ["Bye", "See you later", "Goodbye","Exit","Quit"],
+      "responses": [
+        "See you later, thanks for visiting",
+        "Have a nice day",
+        "Bye! Come back again soon."
+      ]
+    },
+    {
+      "tag": "thanks",
+      "patterns": ["Thanks", "Thank you", "That's helpful", "Thank's a lot!","You are helpful!"],
+      "responses": ["Happy to help!", "Any time!", "My pleasure!"]
+    }
+,{
+      "tag" : "GDP",
+      "patterns" : [
+        "GDP data",
+         "Show me a visualization of GDP"
+      ],      "responses" : [
+        "GDPVisual_Create"
+      ]
+    }
+
+,{
+      "tag" : "Sales",
+      "patterns" : [
+        "Sales data",
+         "Show me a visualization of Sales"
+      ],      "responses" : [
+        "SalesVisual_Create"
+      ]
+    }
+
+,{
+      "tag" : "airlines",
+      "patterns" : [
+        "airlines data",
+         "Show me a visualization of airlines"
+      ],      "responses" : [
+        "airlinesVisual_Create"
+      ]
+    }
+
+,{
+      "tag" : "covid",
+      "patterns" : [
+        "covid data",
+         "Show me a visualization of covid"
+      ],      "responses" : [
+        "covidVisual_Create"
+      ]
+    }
+
+,{
+      "tag" : "Cars",
+      "patterns" : [
+        "Cars data",
+         "Show me a visualization of Cars"
+      ],      "responses" : [
+        "CarsVisual_Create"
+      ]
+    }
+
+,{
+      "tag" : "SampleSuperstore",
+      "patterns" : [
+        "SampleSuperstore data",
+         "Show me a visualization of SampleSuperstore"
+      ],      "responses" : [
+        "SampleSuperstoreVisual_Create"
+      ]
+    }
+
+,{
+      "tag" : "Iris",
+      "patterns" : [
+        "Iris data",
+         "Show me a visualization of Iris"
+      ],      "responses" : [
+        "IrisVisual_Create"
+      ]
+    }
+
+  ]
+}
