@@ -104,5 +104,45 @@
       ]
     }
 
+,{
+      "tag" : "Salary_Data",
+      "patterns" : [
+        "Salary_Data data",
+         "Show me a visualization of Salary_Data"
+      ],      "responses" : [
+        "Salary_DataVisual_Create"
+      ]
+    }
+
+,{
+      "tag" : "Social_Network_Ads",
+      "patterns" : [
+        "Social_Network_Ads data",
+         "Show me a visualization of Social_Network_Ads"
+      ],      "responses" : [
+        "Social_Network_AdsVisual_Create"
+      ]
+    }
+
+,{
+      "tag" : "tumor",
+      "patterns" : [
+        "tumor data",
+         "Show me a visualization of tumor"
+      ],      "responses" : [
+        "tumorVisual_Create"
+      ]
+    }
+
+,{
+      "tag" : "shows",
+      "patterns" : [
+        "shows data",
+         "Show me a visualization of shows"
+      ],      "responses" : [
+        "showsVisual_Create"
+      ]
+    }
+
   ]
 }
