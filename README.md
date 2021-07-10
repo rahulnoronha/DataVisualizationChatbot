@@ -10,16 +10,16 @@ _______________________________________
 ###
 ______________________________________
 ______________________________________
-![Planning Document](Images\DesignDocumentSalesChatbot.png)
+![Planning Document](Images/DesignDocumentSalesChatbot.png)
 ______________________________________
 ______________________________________
-![Brain Storming](Images\DesignDocument1SalesChatbot.png)
+![Brain Storming](Images/DesignDocument1SalesChatbot.png)
 _____________________________________
 _____________________________________
 ### Design Document Flow Diagram ###
 _____________________________________
 _____________________________________
-![Design Document](Images\ChatbotAppFlowDiagram.jpeg)
+![Design Document](Images/ChatbotAppFlowDiagram.jpeg)
 _____________________________________
 _____________________________________
 #### Learn how to Run the Application from [Run Application](https://rahuldatavisualization.blogspot.com/2021/07/how-to-run-chatbot-application-step-by.html)
