@@ -1,3 +1,4 @@
+from os import error
 from tkinter import *
 from tkinter import filedialog
 from chat import get_response, bot_name
@@ -11,13 +12,14 @@ import keyring
 import matplotlib
 import webbrowser
 import seaborn as sns
+import train
 
 # Colours
-BG_GRAY = "#A9A9A9" #dark gray
-BG_COLOUR = "#FF8C00" #dark orange
-BG_COLOUR1 = "#FFFFFF" #White
-BG_COLOUR2 = "#FF0000" #red
-TEXT_COLOUR = "#000000" #Black
+BG_GRAY = "#A9A9A9"  # dark gray
+BG_COLOUR = "#FF8C00"  # dark orange
+BG_COLOUR1 = "#FFFFFF"  # White
+BG_COLOUR2 = "#FF0000"  # red
+TEXT_COLOUR = "#000000"  # Black
 
 # Fonts
 FONT = "Helvetica 14"
@@ -27,6 +29,8 @@ FONT_BOLD = "Helvetica 13 bold"
 imported_files = []
 
 #Main Function
+
+
 def main():
     app = ChatApplication()
     app.run()
@@ -35,13 +39,13 @@ def main():
 #Restart Function
 def restart():
     import sys
-    print("argv was",sys.argv)
+    print("argv was", sys.argv)
     print("sys.executable was", sys.executable)
     print("restart now")
     import os
-    os.execv(sys.executable, ['python','app.py'])     
-    
-    
+    os.execv(sys.executable, ['python', 'app.py'])
+
+
 class ChatApplication:
     def __init__(self):
         self.window = Tk()
@@ -92,13 +96,12 @@ class ChatApplication:
         input_button.place(relx=0.48, rely=0.008,
                            relheight=0.06, relwidth=0.22)
         # Help Button
-        help_button = Button(bottom_label,text="Help",
-                             font=FONT_BOLD, width=4, bg=BG_GRAY,command=help)
+        help_button = Button(bottom_label, text="Help",
+                             font=FONT_BOLD, width=4, bg=BG_GRAY, command=help)
         help_button.place(relx=0.92, rely=0.008,
-                           relheight=0.06, relwidth=0.08)
-    
-    
-    def _setup_visual(self,headers,df):
+                          relheight=0.06, relwidth=0.08)
+
+    def _setup_visual(self, headers, df):
         self._headers = headers
         self._df = df
         self.sub = Toplevel()
@@ -107,14 +110,14 @@ class ChatApplication:
         self.sub.configure(width=470, height=550, bg=BG_COLOUR1)
         # head label
         head_label1 = Label(self.sub, bg=BG_COLOUR1, fg=TEXT_COLOUR,
-                           text="Graphs", font=FONT_BOLD, pady=10)
+                            text="Graphs", font=FONT_BOLD, pady=10)
         head_label1.place(relwidth=1)
         # tiny divider
         line1 = Label(self.sub, width=450, bg=BG_GRAY)
         line1.place(relwidth=1, rely=0.07, relheight=0.012)
         # text widget
         self.text_widget1 = Text(self.sub, width=20, height=2, bg=BG_COLOUR, fg=TEXT_COLOUR,
-                                font=FONT, padx=5, pady=5)
+                                 font=FONT, padx=5, pady=5)
         self.text_widget1.place(relheight=0.745, relwidth=1, rely=0.08)
         self.text_widget1.configure(cursor="arrow", state=NORMAL)
         # bottom label
@@ -124,61 +127,82 @@ class ChatApplication:
         scrollbar1 = Scrollbar(self.text_widget1)
         scrollbar1.place(relheight=1, relx=0.974)
         scrollbar1.configure(command=self.text_widget1.yview)
-        msg1 = f"Enter a number\n1. Pairplot\n2.Bar chart\n3.Pie chart\n4. Scatterplot\nfollowed by the number of independent variables followed by parameters space separated\n\n"
-        msg1+="The headers in the data are\n\n"
-        for i,j in enumerate(headers):
-            msg1+=f"{i} {j}\n"
+        msg1 = f"Enter a number\n1. Pairplot\n2.Bar chart\n3.Pie chart\n4. Scatterplot\n\nFollowed by the number of independent variables \n\nFollowed by parameters which are space separated and can be index or strings\n\n"
+        msg1+=f"Example: 4 1 {headers[2]} {headers[3]}\n\nOR \n\n4 1 2 3\n\n"
+        msg1 += "The headers in the data are\n\n"
+        for i, j in enumerate(headers):
+            msg1 += f"{i} {j}\n"
         self.text_widget1.insert(END, msg1)
         # message entry box
         self.msg_entry1 = Entry(
             bottom_label1, bg=BG_COLOUR1, fg=TEXT_COLOUR, font=FONT)
         self.msg_entry1.place(relwidth=0.74, relheight=0.06,
-                             rely=0.008, relx=0.011)
+                              rely=0.008, relx=0.011)
         self.msg_entry1.focus()
         self.msg_entry1.bind("<Return>", self._on_enter_vis)
         # send button
         send_button1 = Button(bottom_label1, text="Visualize", font=FONT_BOLD, width=10, bg=BG_GRAY,
-                             command=lambda: self._on_enter_vis(None))
-        send_button1.place(relx=0.70, rely=0.008, relheight=0.06, relwidth=0.22)
+                              command=lambda: self._on_enter_vis(None))
+        send_button1.place(relx=0.70, rely=0.008,
+                           relheight=0.06, relwidth=0.22)
         #help button
-        help_button1 = Button(bottom_label1,text="Help",
-                             font=FONT_BOLD, width=10, bg=BG_GRAY,command=help)
+        help_button1 = Button(bottom_label1, text="Help",
+                              font=FONT_BOLD, width=10, bg=BG_GRAY, command=help)
         help_button1.place(relx=0.92, rely=0.008,
                            relheight=0.06, relwidth=0.08)
         self.sub.mainloop()
-        
-        
-    def _on_enter_vis(self,event):
+
+    def _on_enter_vis(self, event):
         parameters = self.msg_entry1.get()
         a = list(parameters.split())
         headers = self._headers
         chart_type = int(a[0])
         num = int(a[1])
         print(a)
-        b=a[num+2:]
-        flag=0
-        for i in b:
-            if i not in headers:
-                self.sub.destroy()
-                flag = 1
-                
-                
-        if flag!=1:    
+        b = a[num+1:]
+        print(b)
+        flag = 0
+        for n,i in enumerate(b): 
+            #Read each character in b[n]
+            for j in i:
+                if(j in ['0','1','2','3','4','5','6','7','8','9']):
+                    continue
+                else:
+                    flag = 1
+                    break
+            if (flag==0):
+                b[n] = headers[int(i)]
+                a[n+2] = headers[int(i)]
+            elif(flag==1):
+                #Case when b[n] is not an Integer
+                if i.lower().capitalize() not in headers and i.lower() not in headers and i.upper() not in headers and i not in headers:
+                    flag = 2
+                    break
+                else:
+                    for e,m in enumerate(headers):
+                        if(i.lower()==m.lower()):
+                            b[n] = m
+                            a[n+2] = m
+                    pass
+        
+
+        if flag != 2:
             ind_variable = a[2:2+num]
             dep_variable = a[num+2:]
             df = self._df
             try:
-                if chart_type==1:
-                    fig = sns.pairplot(x_vars=ind_variable,y_vars=dep_variable,data=df)
+                if chart_type == 1:
+                    fig = sns.pairplot(x_vars=ind_variable,
+                                       y_vars=dep_variable, data=df)
                     for ax in fig.axes.flat[:2]:
                         ax.tick_params(axis='x', labelrotation=90)
-                        fig.fig.set_size_inches(20,20)
+                        fig.fig.set_size_inches(20, 20)
                     plt.title('PAIRPLOT')
-                    plt.show()     
-                    print("The independent variables are\n",ind_variable)
-                    print("The dependent variables are \n",dep_variable)
-                elif chart_type==2:
-                    if len(ind_variable)==len(dep_variable) and len(ind_variable)==1:
+                    plt.show()
+                    print("The independent variables are\n", ind_variable)
+                    print("The dependent variables are \n", dep_variable)
+                elif chart_type == 2:
+                    if len(ind_variable) == len(dep_variable) and len(ind_variable) == 1:
                         data_x = df[ind_variable[0]]
                         data_y = df[dep_variable[0]]
                         plt.xlabel(ind_variable[0])
@@ -188,27 +212,26 @@ class ChatApplication:
                         plt.show()
                     else:
                         pass
-                elif chart_type==3:
-                    df[ind_variable].value_counts().plot.pie(autopct='%0.2f%%',radius=2)
+                elif chart_type == 3:
+                    df[ind_variable].value_counts().plot.pie(
+                        autopct='%0.2f%%', radius=2)
                     plt.show()
-                elif chart_type==4:
+                elif chart_type == 4:
                     for i in ind_variable:
                         for j in dep_variable:
-                            plt.scatter(df[i],df[j])
+                            plt.scatter(df[i], df[j])
                             plt.title(f'{i} vs {j}')
                             plt.show()
             except error as e:
-                print(error)
+                print(e)
             else:
                 pass
         else:
             pass
-        
-    
+
     def _on_enter_pressed(self, event):
         msg = self.msg_entry.get()
         self._insert_message(msg, "You")
-
 
     def _insert_message(self, msg, sender):
         if not msg:
@@ -243,9 +266,9 @@ class ChatApplication:
             headers = df1.columns.values
             print(headers)
             postgreSQLconnection.close()
-            self._setup_visual(headers,df1)
+            self._setup_visual(headers, df1)
 
-        
+
 def encode():
     """
     On clicking input_csv button this function is called. It takes in no parameters.
@@ -256,7 +279,7 @@ def encode():
     Store the table name in a text file called imported_file.txt.
     """
     file1 = filedialog.askopenfile(defaultextension='.csv', filetypes=[
-                                   ('Comma Separated Value', '*.csv'),('All Files', '*.*')])
+                                   ('Comma Separated Value', '*.csv'), ('All Files', '*.*')])
     input_file_path = file1.name
     get_csvtodb(input_file_path)
     print(input_file_path)
@@ -274,7 +297,6 @@ def encode():
                 break
             else:
                 pass
-                
 
     # Add intents.json entry for imported Data Table if it doesn't exists in the json file already
     if flag == 0:
@@ -309,11 +331,11 @@ def encode():
 
 
 def help():
-    link = "https://rahuldatavisualization.blogspot.com/2021/07/data-visualization-bot-help.html"
+    link = "help.html"
+    link1 = "run.html"
     webbrowser.open(link)
-
+    webbrowser.open(link1)
 
 
 if __name__ == "__main__":
     main()
-    
