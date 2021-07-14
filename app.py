@@ -1,4 +1,3 @@
-from os import error
 from tkinter import *
 from tkinter import filedialog
 from chat import get_response, bot_name
@@ -12,6 +11,8 @@ import keyring
 import matplotlib
 import webbrowser
 import seaborn as sns
+import json
+import os
 import train
 
 # Colours
@@ -46,6 +47,15 @@ def restart():
     os.execv(sys.executable, ['python', 'app.py'])
 
 
+#To check if a string is in json format we want it to be
+def check_json(json_text):
+    try:
+        json.loads(json_text)
+        return True
+    except Exception as ex:
+        return False
+    
+    
 class ChatApplication:
     def __init__(self):
         self.window = Tk()
@@ -100,6 +110,11 @@ class ChatApplication:
                              font=FONT_BOLD, width=4, bg=BG_GRAY, command=help)
         help_button.place(relx=0.92, rely=0.008,
                           relheight=0.06, relwidth=0.08)
+        #Feedback Button
+        feedback_button = Button(head_label, text="Feedback",
+                             font=FONT_BOLD, width=6, bg=BG_GRAY, command=self.feedback)
+        feedback_button.place(relx=0.62, rely=0.4,
+                          relheight=0.4, relwidth=0.3) 
 
     def _setup_visual(self, headers, df):
         self._headers = headers
@@ -146,12 +161,117 @@ class ChatApplication:
         send_button1.place(relx=0.70, rely=0.008,
                            relheight=0.06, relwidth=0.22)
         #help button
-        help_button1 = Button(bottom_label1, text="Help",
-                              font=FONT_BOLD, width=10, bg=BG_GRAY, command=help)
-        help_button1.place(relx=0.92, rely=0.008,
-                           relheight=0.06, relwidth=0.08)
+        help_button1 = Button(head_label1, text="Help",
+                              font=FONT_BOLD, width=4, bg=BG_GRAY, command=help)
+        help_button1.place(relx=0.72, rely=0.008,
+                           relheight=0.4, relwidth=0.3)
         self.sub.mainloop()
+        
+    def _setup_feedback(self):
+        self.feed = Toplevel()
+        self.feed.title("Feedback")
+        self.feed.resizable(width=True, height=True)
+        self.feed.configure(width=470, height=550, bg=BG_COLOUR1)
+        # head label
+        head_label2 = Label(self.feed, bg=BG_COLOUR1, fg=TEXT_COLOUR,
+                            text="Feedback", font=FONT_BOLD, pady=10)
+        head_label2.place(relwidth=1)
+        # tiny divider
+        line2 = Label(self.feed, width=450, bg=BG_GRAY)
+        line2.place(relwidth=1, rely=0.07, relheight=0.012)
+        # text widget
+        self.text_widget2 = Text(self.feed, width=20, height=2, bg=BG_COLOUR, fg=TEXT_COLOUR,
+                                 font=FONT, padx=5, pady=5)
+        self.text_widget2.place(relheight=0.745, relwidth=1, rely=0.08)
+        self.text_widget2.configure(cursor="arrow", state=NORMAL)
+        # bottom label
+        bottom_label2 = Label(self.feed, bg=BG_GRAY, height=80)
+        bottom_label2.place(relwidth=1, rely=0.825)
+        # scroll bar
+        scrollbar2 = Scrollbar(self.text_widget2)
+        scrollbar2.place(relheight=1, relx=0.974)
+        scrollbar2.configure(command=self.text_widget2.yview)
+        msg2 = f"Enter your query and the reply you were expecting in the following format and then Press Send button\n\n\n "
+        msg2+="Example:\n\n Query: What is your age?\n\n\n\nReply: I am not that old\n\n\n\nJson Input String will be:\n\n,{\"tag\": \n\"description tag of feeback without spaces\",\n \"patterns\" : \n[\"What is your age?\",\n\"How old are you?\"],\n\"responses\" : \n[\"I am not that old\"]\n\n}"
+        self.text_widget2.insert(END, msg2)
+        # message entry box
+        self.msg_entry2 = Entry(
+            bottom_label2, bg=BG_COLOUR1, fg=TEXT_COLOUR, font=FONT)
+        self.msg_entry2.place(relwidth=0.64, relheight=0.06,
+                              rely=0.008, relx=0.011)
+        self.msg_entry2.focus()
+        self.msg_entry2.bind("<Return>", self._on_enter_fed)
+        # send button
+        send_button1 = Button(bottom_label2, text="Send", font=FONT_BOLD, width=10, bg=BG_GRAY,
+                              command=lambda: self._on_enter_fed(None))
+        send_button1.place(relx=0.70, rely=0.008,
+                           relheight=0.06, relwidth=0.22)
+        #help button
+        help_button1 = Button(head_label2, text="Help",
+                              font=FONT_BOLD, width=4, bg=BG_GRAY, command=help)
+        help_button1.place(relx=0.62, rely=0.4,
+                           relheight=0.4, relwidth=0.3)
+        self.feed.mainloop()
 
+    
+    def _on_enter_fed(self,event):
+        msg3 = self.msg_entry2.get()
+        msg3 = msg3.strip()
+        tags = list()
+        with open('intents.json', 'r') as f:
+            intents = json.load(f)
+        for intent in intents['intents']:
+            tag = intent['tag']
+            tags.append(tag)
+        
+        if (check_json(msg3[1:])==True and msg3.startswith(',') and msg3.endswith('}')):
+            flag = 0
+            f = open('temp.json','w')
+            f.write('{ "intents" : [')
+            f.write(msg3[1:])
+            f.write(']}')
+            f.close()
+            with open('temp.json', 'r') as f:
+                msg_intents = json.load(f)
+            for intent in msg_intents['intents']:
+                if(intent['tag'] not in tags):
+                    continue
+                else:
+                    flag = 1
+                    break
+            os.remove('temp.json')
+            if flag==0:
+                with open('intents.json', 'r+') as f:
+                    lines = f.readlines()
+                    f.seek(0)
+                    f.truncate()
+                    f.writelines(lines[0:-2])
+                    f.write(msg3)
+                    f.write('\n')
+                    f.write('  ]\n')
+                    f.write('}')
+                    f.write('\n')
+                import train
+                restart()
+            else:
+                self.text_widget2.delete(1.0,END)
+                msg2="Error Tag name already exists, Please Retry!\n\n"
+                msg2+= f"Enter your query and the reply you were expecting in the following format and then Press Send button\n\n\n"
+                msg2+="Example:\n\n Query: What is your age?\n\n\n\nReply: I am not that old\n\n\n\nJson Input String will be:\n\n,{\"tag\": \n\"description tag of feeback without spaces\",\n \"patterns\" : \n[\"What is your age?\",\n\"How old are you?\"],\n\"responses\" : \n[\"I am not that old\"]\n\n}"
+                self.text_widget2.insert(1.0, msg2)
+                    
+        
+        else:
+            self.text_widget2.delete(1.0,END)
+            msg2="Error Please Retry!\n\n"
+            msg2+= f"Enter your query and the reply you were expecting in the following format and then Press Send button\n\n\n"
+            msg2+="Example:\n\n Query: What is your age?\n\n\n\nReply: I am not that old\n\n\n\nJson Input String will be:\n\n,{\"tag\": \n\"description tag of feeback without spaces\",\n \"patterns\" : \n[\"What is your age?\",\n\"How old are you?\"],\n\"responses\" : \n[\"I am not that old\"]\n\n}"
+            self.text_widget2.insert(1.0, msg2)
+                
+        
+        
+    
+    
     def _on_enter_vis(self, event):
         parameters = self.msg_entry1.get()
         a = list(parameters.split())
@@ -222,7 +342,7 @@ class ChatApplication:
                             plt.scatter(df[i], df[j])
                             plt.title(f'{i} vs {j}')
                             plt.show()
-            except error as e:
+            except Exception as e:
                 print(e)
             else:
                 pass
@@ -267,6 +387,8 @@ class ChatApplication:
             print(headers)
             postgreSQLconnection.close()
             self._setup_visual(headers, df1)
+    def feedback(self):
+        self._setup_feedback()    
 
 
 def encode():
@@ -335,7 +457,10 @@ def help():
     link1 = "run.html"
     webbrowser.open(link)
     webbrowser.open(link1)
+    
+    
 
-
+    
+    
 if __name__ == "__main__":
     main()

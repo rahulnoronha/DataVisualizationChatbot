@@ -144,5 +144,18 @@
       ]
     }
 
+,{"tag" : "ageofbot","patterns":["What is your age?","How old are you?"], "responses" : ["I am not very old", "I am a relatively new bot"]}
+,{
+      "tag" : "Churn_Modelling",
+      "patterns" : [
+        "Churn_Modelling data",
+         "Show me a visualization of Churn_Modelling"
+      ],      "responses" : [
+        "Churn_ModellingVisual_Create"
+      ]
+    }
+,{"tag" : "joke", "patterns" : ["Tell me a joke","Crack a joke","Say something funny","Funny"], "responses" : ["Why did the chicken cross the road? To get to the other side!","Why did the fish cross the road? To find Nemo"]}
+
+,{"tag" : "Builder", "patterns" : ["Who created you?","Who is your maker?","Who developed you?"],"responses": ["Rahul Noronha is the creator of this application"]}
   ]
 }
