@@ -7,15 +7,18 @@ from sqlalchemy import create_engine
 from pathlib import Path
 from matplotlib import pyplot as plt
 import pandas as pd
-import keyring
 import matplotlib
 import webbrowser
 import seaborn as sns
 import json
+import keyring
 import os
+import sys
 import train
 
+
 # Colours
+#The colours used in the GUI front-end
 BG_GRAY = "#A9A9A9"  # dark gray
 BG_COLOUR = "#FF8C00"  # dark orange
 BG_COLOUR1 = "#FFFFFF"  # White
@@ -23,31 +26,36 @@ BG_COLOUR2 = "#FF0000"  # red
 TEXT_COLOUR = "#000000"  # Black
 
 # Fonts
+#Font used to display text onto tkinter GUI
 FONT = "Helvetica 14"
 FONT_BOLD = "Helvetica 13 bold"
 
 # To store a list of already imported Dataset CSVs
 imported_files = []
 
+
 #Main Function
-
-
 def main():
+    """
+    Create object of class ChatApplication which is created by __init__
+    Use the run method of the app to create the main window.
+    """
     app = ChatApplication()
     app.run()
 
 
 #Restart Function
 def restart():
-    import sys
+    """
+    This function helps to restart the GUI, namely app.py using sys and os modules.
+    """
     print("argv was", sys.argv)
     print("sys.executable was", sys.executable)
-    print("restart now")
-    import os
+    print("Restarting application now")
     os.execv(sys.executable, ['python', 'app.py'])
 
 
-#To check if a string is in json format we want it to be
+#To check if a string is in json format
 def check_json(json_text):
     try:
         json.loads(json_text)
@@ -57,14 +65,29 @@ def check_json(json_text):
     
     
 class ChatApplication:
+    """
+    Chat Application class: Has it's own set of attributes and methods which are part of the tkinter GUI
+    """
     def __init__(self):
         self.window = Tk()
         self._setup_main_window()
 
     def run(self):
+        """
+        Creates the mainloop of the main window on start by call from main()
+        """
         self.window.mainloop()
 
     def _setup_main_window(self):
+        """
+        Creates the wigdets of the main window and waits for Buttons to be pressed. Help button opens
+        up html local host help.html and run.html, Feedback button allows user to enter query they
+        need answer to the json file for future improvement of answers. On press of Input CSV button
+        we have the option to import a csv file and store it in local Database using db.py. On pressing
+        enter or sent the text is sent to the torch model created in train.py and the app replies to the message 
+        using the model. In case a data visualization command has been entered then it takes user
+        to visualization page.
+        """
         self.window.title("Chat")
         self.window.resizable(width=True, height=True)
         self.window.configure(width=470, height=550, bg=BG_COLOUR1)
@@ -191,8 +214,8 @@ class ChatApplication:
         scrollbar2 = Scrollbar(self.text_widget2)
         scrollbar2.place(relheight=1, relx=0.974)
         scrollbar2.configure(command=self.text_widget2.yview)
-        msg2 = f"Enter your query and the reply you were expecting in the following format and then Press Send button\n\n\n "
-        msg2+="Example:\n\n Query: What is your age?\n\n\n\nReply: I am not that old\n\n\n\nJson Input String will be:\n\n,{\"tag\": \n\"description tag of feeback without spaces\",\n \"patterns\" : \n[\"What is your age?\",\n\"How old are you?\"],\n\"responses\" : \n[\"I am not that old\"]\n\n}"
+        msg2 = f"Enter your query and the reply you were expecting in the following format and then Press Send button\n\n"
+        msg2+="Example:\n\n Query: What is your age?\n\n\nReply: I am not that old\n\n\nUser Entry:\n\n\ndescription_tag_of_feeback_without_spaces|\n\"What is your age?\",\n\"How old are you?\"|\n\"I am not that old\",\"I am quite young\"\n\nEnter Send Button after typing message"
         self.text_widget2.insert(END, msg2)
         # message entry box
         self.msg_entry2 = Entry(
@@ -215,30 +238,43 @@ class ChatApplication:
 
     
     def _on_enter_fed(self,event):
-        msg3 = self.msg_entry2.get()
-        msg3 = msg3.strip()
+        """
+        This function is used to get the entry of data on press of the send button
+        """
+        flag = 0
+        msg4 = self.msg_entry2.get()
+        #Get the list of tags from the json file intents.json
         tags = list()
         with open('intents.json', 'r') as f:
             intents = json.load(f)
         for intent in intents['intents']:
             tag = intent['tag']
             tags.append(tag)
+        msg = msg4[0:msg4.find('|')]
+        rem_msg = msg4[msg4.find('|')+1:]
+        if(msg not in tags):
+            flag = 0
+        else:
+            flag = 1
+        #Adding tag to json
+        msg3=",{"
+        msg3 += f'"tag" : "{msg}",'
+        #Adding patterns to json
+        patterns_list = rem_msg[0:rem_msg.find('|')].strip()
+        rem_msg = rem_msg[rem_msg.find('|')+1:]
+        msg3+= f'"patterns" : [{patterns_list}],'
+        #Adding responses to json
+        responses_list = rem_msg.strip()
+        msg3+= f'"responses" :[{responses_list}]'
+        msg3+='}'
+        print(msg3)
         
         if (check_json(msg3[1:])==True and msg3.startswith(',') and msg3.endswith('}')):
-            flag = 0
             f = open('temp.json','w')
             f.write('{ "intents" : [')
             f.write(msg3[1:])
             f.write(']}')
             f.close()
-            with open('temp.json', 'r') as f:
-                msg_intents = json.load(f)
-            for intent in msg_intents['intents']:
-                if(intent['tag'] not in tags):
-                    continue
-                else:
-                    flag = 1
-                    break
             os.remove('temp.json')
             if flag==0:
                 with open('intents.json', 'r+') as f:
@@ -257,7 +293,7 @@ class ChatApplication:
                 self.text_widget2.delete(1.0,END)
                 msg2="Error Tag name already exists, Please Retry!\n\n"
                 msg2+= f"Enter your query and the reply you were expecting in the following format and then Press Send button\n\n\n"
-                msg2+="Example:\n\n Query: What is your age?\n\n\n\nReply: I am not that old\n\n\n\nJson Input String will be:\n\n,{\"tag\": \n\"description tag of feeback without spaces\",\n \"patterns\" : \n[\"What is your age?\",\n\"How old are you?\"],\n\"responses\" : \n[\"I am not that old\"]\n\n}"
+                msg2+="Example:\n\n Query: What is your age?\n\n\nReply: I am not that old\n\n\nUser Entry:\n\n\ndescription_tag_of_feeback_without_spaces|\n\"What is your age?\",\n\"How old are you?\"|\n\"I am not that old\",\"I am quite young\"\n\nEnter Send Button after typing message"
                 self.text_widget2.insert(1.0, msg2)
                     
         
@@ -265,7 +301,7 @@ class ChatApplication:
             self.text_widget2.delete(1.0,END)
             msg2="Error Please Retry!\n\n"
             msg2+= f"Enter your query and the reply you were expecting in the following format and then Press Send button\n\n\n"
-            msg2+="Example:\n\n Query: What is your age?\n\n\n\nReply: I am not that old\n\n\n\nJson Input String will be:\n\n,{\"tag\": \n\"description tag of feeback without spaces\",\n \"patterns\" : \n[\"What is your age?\",\n\"How old are you?\"],\n\"responses\" : \n[\"I am not that old\"]\n\n}"
+            msg2+="Example:\n\n Query: What is your age?\n\n\nReply: I am not that old\n\n\nUser Entry:\n\n\ndescription_tag_of_feeback_without_spaces|\n\"What is your age?\",\n\"How old are you?\"|\n\"I am not that old\",\"I am quite young\"\n\nEnter Send Button after typing message"
             self.text_widget2.insert(1.0, msg2)
                 
         
@@ -299,8 +335,8 @@ class ChatApplication:
         print(a)
         b = a[num+1:]
         print(b)
-        flag = 0
-        for n,i in enumerate(b): 
+        for n,i in enumerate(b):
+            flag = 0 
             #Read each character in b[n]
             for j in i:
                 if(j in ['0','1','2','3','4','5','6','7','8','9']):
