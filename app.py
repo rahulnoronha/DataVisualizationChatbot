@@ -273,6 +273,24 @@ class ChatApplication:
     
     
     def _on_enter_vis(self, event):
+        """
+        Function is used to get the parameters list and check if it is in the correct format.
+        If yes then based on the input, the correct visualization is displayed, else relevant
+        error message needs to be displayed.
+        1 1 Total Fuel
+
+        1 is to select pairplot
+
+        1 is the number of independent variables we are using in the plot
+
+        Total is the independent variable since in this case we selected
+        1 for independent variables
+
+        Fuel will be the variable we are trying to see the relationship of 
+        Total with
+
+        TODO: Make Query In the format: Total consumption vs Fuel
+        """
         parameters = self.msg_entry1.get()
         a = list(parameters.split())
         headers = self._headers
