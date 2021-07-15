@@ -215,7 +215,7 @@ class ChatApplication:
         scrollbar2.place(relheight=1, relx=0.974)
         scrollbar2.configure(command=self.text_widget2.yview)
         msg2 = f"Enter your query and the reply you were expecting in the following format and then Press Send button\n\n"
-        msg2+="Example:\n\n Query: What is your age?\n\n\nReply: I am not that old\n\n\nUser Entry:\n\n\ndescription_tag_of_feeback_without_spaces|\n\"What is your age?\",\n\"How old are you?\"|\n\"I am not that old\",\"I am quite young\"\n\nEnter Send Button after typing message"
+        msg2+="Example:\n\n Query: What is your age?\n\n\nReply: I am not that old\n\n\nUser Entry:\n\n\ndescription_tag_of_feeback_without_spaces|\n\"What is your age?\",\n\"How old are you?\"|\n\"I am not that old\",\"I am quite young\"\n\nEnter Send Button after typing message or press Shift Enter"
         self.text_widget2.insert(END, msg2)
         # message entry box
         self.msg_entry2 = Entry(
@@ -223,7 +223,8 @@ class ChatApplication:
         self.msg_entry2.place(relwidth=0.64, relheight=0.06,
                               rely=0.008, relx=0.011)
         self.msg_entry2.focus()
-        self.msg_entry2.bind("<Return>", self._on_enter_fed)
+        self.msg_entry2.bind("<Shift_L><Return>", self._on_enter_fed)
+        self.msg_entry2.bind("<Shift_R><Return>", self._on_enter_fed)
         # send button
         send_button1 = Button(bottom_label2, text="Send", font=FONT_BOLD, width=10, bg=BG_GRAY,
                               command=lambda: self._on_enter_fed(None))
@@ -243,67 +244,83 @@ class ChatApplication:
         """
         flag = 0
         msg4 = self.msg_entry2.get()
-        #Get the list of tags from the json file intents.json
-        tags = list()
-        with open('intents.json', 'r') as f:
-            intents = json.load(f)
-        for intent in intents['intents']:
-            tag = intent['tag']
-            tags.append(tag)
-        msg = msg4[0:msg4.find('|')]
-        rem_msg = msg4[msg4.find('|')+1:]
-        if(msg not in tags):
-            flag = 0
-        else:
-            flag = 1
-        #Adding tag to json
-        msg3=",{"
-        msg3 += f'"tag" : "{msg}",'
-        #Adding patterns to json
-        patterns_list = rem_msg[0:rem_msg.find('|')].strip()
-        rem_msg = rem_msg[rem_msg.find('|')+1:]
-        msg3+= f'"patterns" : [{patterns_list}],'
-        #Adding responses to json
-        responses_list = rem_msg.strip()
-        msg3+= f'"responses" :[{responses_list}]'
-        msg3+='}'
-        print(msg3)
-        
-        if (check_json(msg3[1:])==True and msg3.startswith(',') and msg3.endswith('}')):
-            f = open('temp.json','w')
-            f.write('{ "intents" : [')
-            f.write(msg3[1:])
-            f.write(']}')
-            f.close()
-            os.remove('temp.json')
-            if flag==0:
-                with open('intents.json', 'r+') as f:
-                    lines = f.readlines()
-                    f.seek(0)
-                    f.truncate()
-                    f.writelines(lines[0:-2])
-                    f.write(msg3)
-                    f.write('\n')
-                    f.write('  ]\n')
-                    f.write('}')
-                    f.write('\n')
-                import train
-                restart()
+        if (len(msg4)>0):
+            #Get the list of tags from the json file intents.json
+            tags = list()
+            with open('intents.json', 'r') as f:
+                intents = json.load(f)
+            for intent in intents['intents']:
+                tag = intent['tag']
+                tags.append(tag)
+            msg = msg4[0:msg4.find('|')]
+            rem_msg = msg4[msg4.find('|')+1:]
+            if(msg not in tags):
+                flag = 0
+            else:
+                flag = 1
+            #Adding tag to json
+            msg3=",{"
+            msg3 += f'"tag" : "{msg}",'
+            #Adding patterns to json
+            patterns_list = rem_msg[0:rem_msg.find('|')].strip()
+            rem_msg = rem_msg[rem_msg.find('|')+1:]
+            if (len(patterns_list)>0):
+                msg3+= f'"patterns" : [{patterns_list}],'
+                responses_list = rem_msg.strip()
+                if(len(responses_list)>0):
+                    msg3+= f'"responses" :[{responses_list}]'
+                    msg3+='}'
+                    print(msg3)
+                else:
+                    #Done so that message doesn't start with a comma any more
+                    msg3 = '.'+msg3 
+            else:
+                #Done so that message doesn't start with a comma any more
+                msg3 = '.'+msg3
+            #Adding responses to json
+            
+            
+            if (check_json(msg3[1:])==True and msg3.startswith(',') and msg3.endswith('}')):
+                f = open('temp.json','w')
+                f.write('{ "intents" : [')
+                f.write(msg3[1:])
+                f.write(']}')
+                f.close()
+                os.remove('temp.json')
+                if flag==0:
+                    with open('intents.json', 'r+') as f:
+                        lines = f.readlines()
+                        f.seek(0)
+                        f.truncate()
+                        f.writelines(lines[0:-2])
+                        f.write(msg3)
+                        f.write('\n')
+                        f.write('  ]\n')
+                        f.write('}')
+                        f.write('\n')
+                    import train
+                    restart()
+                else:
+                    self.text_widget2.delete(1.0,END)
+                    msg2="Error Tag name already exists, Please Retry!\n\n"
+                    msg2+= f"Enter your query and the reply you were expecting in the following format and then Press Send button\n\n\n"
+                    msg2+="Example:\n\n Query: What is your age?\n\n\nReply: I am not that old\n\n\nUser Entry:\n\n\ndescription_tag_of_feeback_without_spaces|\n\"What is your age?\",\n\"How old are you?\"|\n\"I am not that old\",\"I am quite young\"\n\nEnter Send Button after typing message or press Shift Enter"
+                    self.text_widget2.insert(1.0, msg2)
+                        
+            
             else:
                 self.text_widget2.delete(1.0,END)
-                msg2="Error Tag name already exists, Please Retry!\n\n"
+                msg2="Error Please Retry!\n\n"
                 msg2+= f"Enter your query and the reply you were expecting in the following format and then Press Send button\n\n\n"
-                msg2+="Example:\n\n Query: What is your age?\n\n\nReply: I am not that old\n\n\nUser Entry:\n\n\ndescription_tag_of_feeback_without_spaces|\n\"What is your age?\",\n\"How old are you?\"|\n\"I am not that old\",\"I am quite young\"\n\nEnter Send Button after typing message"
+                msg2+="Example:\n\n Query: What is your age?\n\n\nReply: I am not that old\n\n\nUser Entry:\n\n\ndescription_tag_of_feeback_without_spaces|\n\"What is your age?\",\n\"How old are you?\"|\n\"I am not that old\",\"I am quite young\"\n\nEnter Send Button after typing message or press Shift Enter"
                 self.text_widget2.insert(1.0, msg2)
-                    
-        
         else:
             self.text_widget2.delete(1.0,END)
-            msg2="Error Please Retry!\n\n"
+            msg2="Empty tags, patterns or responses not Accepted!\n\n"
             msg2+= f"Enter your query and the reply you were expecting in the following format and then Press Send button\n\n\n"
-            msg2+="Example:\n\n Query: What is your age?\n\n\nReply: I am not that old\n\n\nUser Entry:\n\n\ndescription_tag_of_feeback_without_spaces|\n\"What is your age?\",\n\"How old are you?\"|\n\"I am not that old\",\"I am quite young\"\n\nEnter Send Button after typing message"
+            msg2+="Example:\n\n Query: What is your age?\n\n\nReply: I am not that old\n\n\nUser Entry:\n\n\ndescription_tag_of_feeback_without_spaces|\n\"What is your age?\",\n\"How old are you?\"|\n\"I am not that old\",\"I am quite young\"\n\nEnter Send Button after typing message or press Shift Enter"
             self.text_widget2.insert(1.0, msg2)
-                
+                    
         
         
     
@@ -454,56 +471,60 @@ def encode():
     Then add the intents to intents.json using file methods open, read, write.
     Store the table name in a text file called imported_file.txt.
     """
-    file1 = filedialog.askopenfile(defaultextension='.csv', filetypes=[
+    try:
+        file1 = filedialog.askopenfile(defaultextension='.csv', filetypes=[
                                    ('Comma Separated Value', '*.csv'), ('All Files', '*.*')])
-    input_file_path = file1.name
-    get_csvtodb(input_file_path)
-    print(input_file_path)
-    file_name = Path(input_file_path).stem
-    imported_files.append(file_name)
+        input_file_path = file1.name
+        get_csvtodb(input_file_path)
+        print(input_file_path)
+        file_name = Path(input_file_path).stem
+        imported_files.append(file_name)
 
-    # Check if the Database Table exists in the json file
-    flag = 0
-    with open('intents.json', 'r') as f:
-        read = f.readlines()
-        for sentence in read:
-            line = sentence.split()
-            if(f'"{file_name}Visual_Create"' in line):
-                flag = 1
-                break
-            else:
-                pass
+        # Check if the Database Table exists in the json file
+        flag = 0
+        with open('intents.json', 'r') as f:
+            read = f.readlines()
+            for sentence in read:
+                line = sentence.split()
+                if(f'"{file_name}Visual_Create"' in line):
+                    flag = 1
+                    break
+                else:
+                    pass
 
-    # Add intents.json entry for imported Data Table if it doesn't exists in the json file already
-    if flag == 0:
-        # Write the json data to intents.json using open, write, seek, truncate, read, readlines, writelines methods
-        with open('intents.json', 'r+') as f:
-            lines = f.readlines()
-            f.seek(0)
-            f.truncate()
-            f.writelines(lines[0:-2])
-            f.write(',{\n')
-            f.write('      "tag" : "{0}",\n'.format(file_name))
-            f.write('      "patterns" : [\n')
-            f.write('        "{0} data",\n '.format(file_name))
-            f.write(
-                '        "Show me a visualization of {0}"\n      ],'.format(file_name))
-            f.write('      "responses" : [\n')
-            f.write('        "{0}Visual_Create"\n'.format(file_name))
-            f.write('      ]\n')
-            f.write('    }\n')
-            f.write('\n')
-            f.write('  ]\n')
-            f.write('}')
-            f.write('\n')
-        # Store imported csv dataset names in a file
-        with open('imported_file.txt', 'a') as f:
-            f.write(imported_files[-1])
-            f.write(' ')
-        import train
-        restart()
-    else:
-        pass
+        # Add intents.json entry for imported Data Table if it doesn't exists in the json file already
+        if flag == 0:
+            # Write the json data to intents.json using open, write, seek, truncate, read, readlines, writelines methods
+            with open('intents.json', 'r+') as f:
+                lines = f.readlines()
+                f.seek(0)
+                f.truncate()
+                f.writelines(lines[0:-2])
+                f.write(',{\n')
+                f.write('      "tag" : "{0}",\n'.format(file_name))
+                f.write('      "patterns" : [\n')
+                f.write('        "{0} data",\n '.format(file_name))
+                f.write(
+                    '        "Show me a visualization of {0}"\n      ],'.format(file_name))
+                f.write('      "responses" : [\n')
+                f.write('        "{0}Visual_Create"\n'.format(file_name))
+                f.write('      ]\n')
+                f.write('    }\n')
+                f.write('\n')
+                f.write('  ]\n')
+                f.write('}')
+                f.write('\n')
+            # Store imported csv dataset names in a file
+            with open('imported_file.txt', 'a') as f:
+                f.write(imported_files[-1])
+                f.write(' ')
+            import train
+            restart()
+        else:
+            pass
+    except Exception as e:
+        print(e)
+    
 
 
 def help():
