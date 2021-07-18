@@ -15,16 +15,15 @@ import json
 import keyring
 import os
 import sys
-
-# import train
+import train
 
 
 # Colours
 # The colours used in the GUI front-end
 BG_GRAY = "#A9A9A9"  # dark gray
-BG_COLOUR = "#FF8C00"  # dark orange
+BG_COLOUR = "#87CEEB"  # sky blue
 BG_COLOUR1 = "#FFFFFF"  # White
-BG_COLOUR2 = "#FF0000"  # red
+BG_COLOUR2 = "#F5F5DC"  # beige
 TEXT_COLOUR = "#000000"  # Black
 
 # Fonts
