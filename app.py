@@ -24,6 +24,7 @@ BG_GRAY = "#A9A9A9"  # dark gray
 BG_COLOUR = "#87CEEB"  # sky blue
 BG_COLOUR1 = "#FFFFFF"  # White
 BG_COLOUR2 = "#F5F5DC"  # beige
+BG_COLOUR3 = "#7F87CE" #Slightly Saturated blue
 TEXT_COLOUR = "#000000"  # Black
 
 # Fonts
@@ -112,7 +113,7 @@ class ChatApplication:
             self.window,
             width=20,
             height=2,
-            bg=BG_COLOUR,
+            bg=BG_COLOUR3,
             fg=TEXT_COLOUR,
             font=FONT,
             padx=5,
@@ -261,7 +262,7 @@ class ChatApplication:
             self.feed,
             width=20,
             height=2,
-            bg=BG_COLOUR,
+            bg=BG_COLOUR2,
             fg=TEXT_COLOUR,
             font=FONT,
             padx=5,

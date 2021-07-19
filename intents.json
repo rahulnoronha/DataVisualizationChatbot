@@ -14,10 +14,10 @@
         "What's up"
       ],
       "responses": [
-        "Hey. I am a data visualization bot",
-        "Hello, thanks for visiting. I am a data visualization bot",
-        "Hi there, what can I do for you?  I am a data visualization bot",
-        "Hi there, how can I help? I am a data visualization bot"
+        "Hey. I am a data visualization bot.",
+        "Hello, thanks for visiting. I am a data visualization bot.",
+        "Hi there, what can I do for you?  I am a data visualization bot.",
+        "Hi there, how can I help? I am a data visualization bot."
       ]
     },
     {
@@ -144,7 +144,7 @@
       ]
     }
 
-,{"tag" : "ageofbot","patterns":["What is your age?","How old are you?"], "responses" : ["I am not very old", "I am a relatively new bot"]}
+,{"tag" : "ageofbot","patterns":["What is your age?","How old are you?"], "responses" : ["I am not very old!", "I am a relatively new bot!"]}
 ,{
       "tag" : "Churn_Modelling",
       "patterns" : [
@@ -154,9 +154,12 @@
         "Churn_ModellingVisual_Create"
       ]
     }
-,{"tag" : "joke", "patterns" : ["Tell me a joke","Crack a joke","Say something funny","Funny"], "responses" : ["Why did the chicken cross the road? To get to the other side!","Why did the fish cross the road? To find Nemo"]}
+,{"tag" : "joke", "patterns" : ["Tell me a joke","Crack a joke","Say something funny","Funny"], "responses" : ["Why did the chicken cross the road? To get to the other side!","Why did the fish cross the road? To find Nemo!"]}
 
-,{"tag" : "Builder", "patterns" : ["Who created you?","Who is your maker?","Who developed you?"],"responses": ["Rahul Noronha is the creator of this application"]}
-,{"tag" : "Help","patterns" : ["Where can I find help?","Help me!","I need help"],"responses" :["Click on the help button at the bottom rigth of the window","Use the Help button"]}
+,{"tag" : "Builder", "patterns" : ["Who created you?","Who is your maker?","Who developed you?"],"responses": ["Rahul Noronha is the creator of this application."]}
+,{"tag" : "Help","patterns" : ["Where can I find help?","Help me!","I need help"],"responses" :["Click on the help button at the bottom rigth of the window.","Use the Help button."]}
+,{"tag" : "whereabouts","patterns" : ["How are you doing?","Are you doing well?", "Are you doing fine?"],"responses" :["I am fine. Thank you!","I am doing well, how are you?"]}
+,{"tag" : "feeling_response","patterns" : ["I am fine.","I am doing well.","I am good."],"responses" :["That's great!","Awesome. Glad you are doing well."]}
+,{"tag" : "feeling_dull_response", "patterns":["I am not doing great.","I am having a bad day.","Not okay.","Poorly."],"responses":["Here is a joke to cheer you up. Why did the chicken cross the road? To get to the other side!","Here is a joke to cheer you up. Why did the fish cross the road? To find Nemo!"]}
   ]
 }
