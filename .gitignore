@@ -5,3 +5,4 @@ venv
 improvement.txt
 test.py
 .vscode
+*.pth
