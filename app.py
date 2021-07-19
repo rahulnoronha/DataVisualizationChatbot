@@ -450,8 +450,8 @@ class ChatApplication:
                 else:
                     for index, header in enumerate(headers):
                         if ind_vars.lower() == header.lower():
-                            params[index] = header
-                            input_vars[index + 2] = header
+                            params[params.index(header)] = header
+                            input_vars[params.index(header) + 2] = header
                     pass
 
         if flag != 2:
@@ -489,11 +489,13 @@ class ChatApplication:
                         df[ind_vars].value_counts().plot.pie(
                         autopct="%0.2f%%", radius=1.4
                     )
+                        plt.title("PIE PLOT")
                         plt.show()
                     for dep_vars in dep_variable:
                         df[dep_vars].value_counts().plot.pie(
                         autopct="%0.2f%%", radius=1.4
                     )
+                        plt.title("PIE PLOT")
                         plt.show()
                 elif chart_type == 4:
                     for ind_vars in ind_variable:
@@ -503,8 +505,8 @@ class ChatApplication:
                             plt.title(f"{ind_vars} vs {dep_vars}")
                             plt.tight_layout(pad=6)
                             plt.show()
-            except Exception as index:
-                print(index)
+            except Exception as e:
+                print(e)
             else:
                 pass
         else:
