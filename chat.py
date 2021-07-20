@@ -1,16 +1,17 @@
 import random
 import json
-
 import torch
-
 from model import NeuralNet
 from nltk_utils import bag_of_words, tokenize
 
+#Check if GPU is available and select device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+#Import the intents from intents.json to the variable intents using json.load() function
 with open('intents.json', 'r') as json_data:
     intents = json.load(json_data)
 
+#Trained Model output stored in data.pth 
 FILE = "data.pth"
 data = torch.load(FILE)
 
@@ -26,6 +27,7 @@ model.load_state_dict(model_state)
 model.eval()
 
 bot_name = "DataViz"
+
 
 def get_response(msg):
     sentence = tokenize(msg)
@@ -44,7 +46,5 @@ def get_response(msg):
         for intent in intents['intents']:
             if tag == intent["tag"]:
                 return random.choice(intent['responses'])
-    
-    return "I do not understand..."
 
-    
+    return "I do not understand..."
