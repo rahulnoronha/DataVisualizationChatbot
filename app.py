@@ -475,6 +475,7 @@ class ChatApplication:
                 pass    
             input_vars = [num_of_independent]+[charts[chart_type-1]]+params
             print(input_vars)
+            params = [p.lower() for p in params]
             print(params)
             for index, ind_vars in enumerate(params):
                 flag = 0
@@ -630,7 +631,7 @@ class ChatApplication:
             if (returned==-1):
                 print("Can't automatically clean data")
                 msg = "CSV is unclean and can't be cleaned automatically.Please do a manual cleaning and retry"
-                self._insert_message(msg, "You")   
+                self._insert_message(msg, "DataViz")   
             else:
                 print(input_file_path)
                 file_name = Path(input_file_path).stem
@@ -673,10 +674,6 @@ class ChatApplication:
                         f.write("  ]\n")
                         f.write("}")
                         f.write("\n")
-                    # Store imported csv dataset names in a file
-                    with open("imported_file.txt", "a") as f:
-                        f.write(imported_files[-1])
-                        f.write(" ")
                     import train
 
                     restart()
