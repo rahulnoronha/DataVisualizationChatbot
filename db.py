@@ -37,6 +37,8 @@ def get_csvtodb(filename):
         print(vx)
     except Exception as ex:
         print(ex)
+        return -2
+        
     else:
         print(f"PostgreSQL Table {name} has been created successfully.")
     

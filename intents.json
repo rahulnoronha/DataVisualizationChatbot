@@ -52,5 +52,45 @@
       ]
     }
 
+,{
+      "tag" : "Salary_Data",
+      "patterns" : [
+        "Salary_Data data",
+         "Show me a visualization of Salary_Data"
+      ],      "responses" : [
+        "Salary_DataVisual_Create"
+      ]
+    }
+
+,{
+      "tag" : "SampleSuperstore",
+      "patterns" : [
+        "SampleSuperstore data",
+         "Show me a visualization of SampleSuperstore"
+      ],      "responses" : [
+        "SampleSuperstoreVisual_Create"
+      ]
+    }
+
+,{
+      "tag" : "Iris",
+      "patterns" : [
+        "Iris data",
+         "Show me a visualization of Iris"
+      ],      "responses" : [
+        "IrisVisual_Create"
+      ]
+    }
+
+,{
+      "tag" : "tumor",
+      "patterns" : [
+        "tumor data",
+         "Show me a visualization of tumor"
+      ],      "responses" : [
+        "tumorVisual_Create"
+      ]
+    }
+
   ]
 }

@@ -1,4 +1,5 @@
 import train
+import tkinter
 import pandas as pd
 import matplotlib
 import webbrowser
@@ -8,7 +9,9 @@ import keyring
 import os
 import sys
 from tkinter import *
+from tkinter import ttk
 from tkinter import filedialog
+from tkinter import messagebox
 from matplotlib.widgets import Slider
 from chat import get_response, bot_name
 from db import get_csvtodb
@@ -27,6 +30,7 @@ BG_COLOUR = "#87CEEB"  # sky blue
 BG_COLOUR1 = "#FFFFFF"  # White
 BG_COLOUR2 = "#F5F5DC"  # beige
 BG_COLOUR3 = "#7F87CE" #Slightly Saturated blue
+BG_COLOUR4 = "#000000" #Black
 TEXT_COLOUR = "#000000"  # Black
 
 # Fonts
@@ -214,7 +218,7 @@ class ChatApplication:
         scrollbar1.place(relheight=1, relx=0.974)
         scrollbar1.configure(command=self.text_widget1.yview)
         msg1 = f"Enter the chart type\n1. Pairplot\n2.Bar_chart\n3.Pie_chart\n4. Scatterplot\n\nFollowed by independent parameters which are space separated\n\nFollowed by vs\n\nFollowed by dependent parameters which are space separated and can be index or strings\n\n"
-        msg1 += f"Example: Scatterplot {headers[2]} vs {headers[3]}\n\nOR \n\nScatterplot 2 vs 3\n\n"
+        msg1 += f"Example: Scatterplot {headers[0]} vs {headers[1]}\n\nOR \n\nScatterplot 0 vs 1\n\n"
         msg1 += "The headers in the data are\n\n"
         for i, j in enumerate(headers):
             msg1 += f"{i} {j}\n"
@@ -239,6 +243,11 @@ class ChatApplication:
             head_label1, text="Help", font=FONT_BOLD, width=4, bg=BG_GRAY, command=help
         )
         help_button1.place(relx=0.72, rely=0.008, relheight=0.4, relwidth=0.3)
+        # CSV view button
+        csv_button1 = Button(
+            head_label1, text="DataFrame", font=FONT_BOLD, width=4, bg=BG_GRAY, command=self.call_tree
+        )
+        csv_button1.place(relx=0.12, rely=0.008, relheight=0.4, relwidth=0.2)
         self.sub.mainloop()
 
     def _setup_feedback(self):
@@ -379,6 +388,7 @@ class ChatApplication:
                     self.text_widget2.insert(1.0, msg2)
 
             else:
+                messagebox.showerror("Information", f"Incorrect Input format")
                 self.text_widget2.delete(1.0, END)
                 msg2 = "Error Please Retry!\n\n"
                 msg2 += f"Enter your query and the reply you were expecting in the following format and then Press Send button\n\n\n"
@@ -564,6 +574,41 @@ class ChatApplication:
             else:
                 pass
 
+    
+    def _setup_treeview(self):
+        self.tree = Toplevel()
+        self.tree.resizable(width=True, height=True) 
+        self.tree.configure(width=470, height=550, bg=BG_COLOUR4)        
+        df = self._df
+
+        # Frame for TreeView
+        frame1 = LabelFrame(self.tree, text="DataFrame Data")
+        frame1.place(relx=0.1, rely=0.1, relheight=0.8, relwidth=0.8)
+        # Treeview Widget
+        tv1 = ttk.Treeview(frame1)
+        tv1.place(relheight=1, relwidth=1) 
+
+        treescrolly = Scrollbar(frame1, orient="vertical", command=tv1.yview) 
+        treescrollx = Scrollbar(frame1, orient="horizontal", command=tv1.xview) 
+        tv1.configure(xscrollcommand=treescrollx.set, yscrollcommand=treescrolly.set) 
+        treescrollx.pack(side="bottom", fill="x") 
+        treescrolly.pack(side="right", fill="y") 
+        tv1.delete(*tv1.get_children())
+        tv1["column"] = list(df.columns)
+        tv1["show"] = "headings"
+        for column in tv1["columns"]:
+            tv1.heading(column, text=column) 
+
+        df_rows = df.to_numpy().tolist() # turns the dataframe into a list of lists
+        for row in df_rows:
+            tv1.insert("", "end", values=row) # inserts each list into the treeview. 
+        self.tree.mainloop()
+        
+
+    def call_tree(self):
+        self._setup_treeview()
+        
+    
     def _on_enter_pressed(self, event):
         msg = self.msg_entry.get()
         self._insert_message(msg, "You")
@@ -630,8 +675,20 @@ class ChatApplication:
             returned = get_csvtodb(input_file_path)
             if (returned==-1):
                 print("Can't automatically clean data")
-                msg = "CSV is unclean and can't be cleaned automatically.Please do a manual cleaning and retry"
-                self._insert_message(msg, "DataViz")   
+                msg1 = "CSV data is unclean and can't be cleaned automatically.Please do a manual cleaning and retry"
+                self.msg_entry.delete(0, END)
+                self.text_widget.configure(state=NORMAL)
+                self.text_widget.insert(END, msg1)
+                self.text_widget.configure(state=DISABLED)
+                messagebox.showerror("Information", f"CSV data in {file1.name} is unclean and can't be automatically cleaned")   
+            elif (returned==-2):
+                print("DB connection error")
+                msg1 = "Couldn't connect to DB"
+                self.msg_entry.delete(0, END)
+                self.text_widget.configure(state=NORMAL)
+                self.text_widget.insert(END, msg1)
+                self.text_widget.configure(state=DISABLED)
+                messagebox.showerror("Information", "Could not connect to to Database")
             else:
                 print(input_file_path)
                 file_name = Path(input_file_path).stem
@@ -680,6 +737,7 @@ class ChatApplication:
                 else:
                     pass
         except Exception as e:
+            messagebox.showerror("Information", "Error reading csv. Retry")
             print(e)
 
 
