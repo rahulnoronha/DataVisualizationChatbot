@@ -1,3 +1,12 @@
+import train
+import pandas as pd
+import matplotlib
+import webbrowser
+import seaborn as sns
+import json
+import keyring
+import os
+import sys
 from tkinter import *
 from tkinter import filedialog
 from matplotlib.widgets import Slider
@@ -7,15 +16,8 @@ from pathlib import Path
 from sqlalchemy import create_engine
 from pathlib import Path
 from matplotlib import pyplot as plt
-import pandas as pd
-import matplotlib
-import webbrowser
-import seaborn as sns
-import json
-import keyring
-import os
-import sys
-import train
+
+
 
 
 # Colours
@@ -211,8 +213,8 @@ class ChatApplication:
         scrollbar1 = Scrollbar(self.text_widget1)
         scrollbar1.place(relheight=1, relx=0.974)
         scrollbar1.configure(command=self.text_widget1.yview)
-        msg1 = f"Enter number of independent variables\n\nFollowed by the chart type\n1. Pairplot\n2.Bar_chart\n3.Pie_chart\n4. Scatterplot\n\nFollowed by parameters which are space separated and can be index or strings\n\n"
-        msg1 += f"Example: 1 Scatterplot {headers[2]} {headers[3]}\n\nOR \n\n1 Scatterplot 2 3\n\n"
+        msg1 = f"Enter the chart type\n1. Pairplot\n2.Bar_chart\n3.Pie_chart\n4. Scatterplot\n\nFollowed by independent parameters which are space separated\n\nFollowed by vs\n\nFollowed by dependent parameters which are space separated and can be index or strings\n\n"
+        msg1 += f"Example: Scatterplot {headers[2]} vs {headers[3]}\n\nOR \n\nScatterplot 2 vs 3\n\n"
         msg1 += "The headers in the data are\n\n"
         for i, j in enumerate(headers):
             msg1 += f"{i} {j}\n"
@@ -384,7 +386,7 @@ class ChatApplication:
                 self.text_widget2.insert(1.0, msg2)
         else:
             self.text_widget2.delete(1.0, END)
-            msg2 = "Empty tags, patterns or responses not Accepted!\n\n"
+            msg2 = "Empty tags, patterns or responses not Accepted! Please Retry\n\n"
             msg2 += f"Enter your query and the reply you were expecting in the following format and then Press Send button\n\n\n"
             msg2 += 'Example:\n\n Query: What is your age?\n\n\nReply: I am not that old\n\n\nUser Entry:\n\n\ndescription_tag_of_feeback_without_spaces|\n"What is your age?",\n"How old are you?"|\n"I am not that old","I am quite young"\n\nEnter Send Button after typing message or press Shift Enter'
             self.text_widget2.insert(1.0, msg2)
@@ -407,110 +409,159 @@ class ChatApplication:
         Total with
 
         TODO: Make Query In the format: Total consumption vs Fuel
+        Plot_name Indep vars list vs Dependent vars list
         """
         parameters = self.msg_entry1.get()
-        input_vars = list(parameters.split())
-        headers = self._headers
+        print(parameters)
+        flag1 = 0
+        flag = 0
         chart_type = 0
-        for index, chart in enumerate(charts):
-            if input_vars[1].lower() == chart.lower():
-                chart_type = index + 1
-                print(chart_type)
-                break
-            else:
-                print("Here no chart_type")
-                pass
-        # Store the number of independent variables in num_of_independent
-        num_of_independent = int(input_vars[0])
-        print(input_vars)
-        params = input_vars[2:]
-        print(params)
-        for index, ind_vars in enumerate(params):
-            flag = 0
-            # Read each character in params[n]
-            for char in ind_vars:
-                if char in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]:
-                    continue
-                else:
-                    flag = 1
-                    break
-            if flag == 0:
-                params[index] = headers[int(ind_vars)]
-                input_vars[index + 2] = headers[int(ind_vars)]
-            elif flag == 1:
-                # Case when params[n] is not an Integer
-                if (
-                    ind_vars.lower().capitalize() not in headers
-                    and ind_vars.lower() not in headers
-                    and ind_vars.upper() not in headers
-                    and ind_vars not in headers
-                ):
-                    flag = 2
-                    break
-                else:
-                    for index, header in enumerate(headers):
-                        if ind_vars.lower() == header.lower():
-                            params[params.index(header)] = header
-                            input_vars[params.index(header) + 2] = header
-                    pass
-
-        if flag != 2:
-            ind_variable = input_vars[2 : 2 + num_of_independent]
-            dep_variable = input_vars[num_of_independent + 2 :]
-            print("The independent variables are\n", ind_variable)
-            print("The dependent variables are \n", dep_variable)
-            df = self._df
-            try:
-                if chart_type == 1:
-                    plt.style.use("seaborn")
-                    fig = sns.pairplot(
-                        x_vars=ind_variable, y_vars=dep_variable, data=df
-                    )
-                    for ax in fig.axes.flat[:2]:
-                        ax.tick_params(axis="x", labelrotation=90)
-                        fig.fig.set_size_inches(20, 20)
-                    plt.title("PAIRPLOT")
-                    plt.tight_layout(pad=10)
-                    plt.show()
-                elif chart_type == 2:
-                    for ind_vars in ind_variable:
-                        for dep_vars in dep_variable:
-                            data_x = df[ind_vars]
-                            data_y = df[dep_vars]
-                            plt.style.use("seaborn")
-                            fig = plt.bar(data_x, data_y, color="blue")
-                            plt.xlabel(ind_vars)
-                            plt.ylabel(dep_vars)
-                            plt.title("BAR PLOT")
-                            plt.tight_layout(pad=6)
-                            plt.show()
-                elif chart_type == 3:
-                    for ind_vars in ind_variable:
-                        df[ind_vars].value_counts().plot.pie(
-                        autopct="%0.2f%%", radius=1.4
-                    )
-                        plt.title("PIE PLOT")
-                        plt.show()
-                    for dep_vars in dep_variable:
-                        df[dep_vars].value_counts().plot.pie(
-                        autopct="%0.2f%%", radius=1.4
-                    )
-                        plt.title("PIE PLOT")
-                        plt.show()
-                elif chart_type == 4:
-                    for ind_vars in ind_variable:
-                        for dep_vars in dep_variable:
-                            plt.style.use("seaborn")
-                            plt.scatter(df[ind_vars], df[dep_vars])
-                            plt.title(f"{ind_vars} vs {dep_vars}")
-                            plt.tight_layout(pad=6)
-                            plt.show()
-            except Exception as e:
-                print(e)
-            else:
-                pass
+        num_of_independent = 0
+        headers = self._headers
+        params = list()
+        input_vars = list()
+        #input_vars = list(parameters.split())
+        if "vs" in parameters:
+            print("Hello")
+            input_vars += list(parameters.split("vs"))
+            input_vars[0] = input_vars[0].strip()
+            input_vars[1] = input_vars[1].strip()
+            print(input_vars)
+        elif "vs" in parameters:
+            print("Hello")
+            input_vars += list(parameters.split("Vs"))
+            input_vars[0] = input_vars[0].strip()
+            input_vars[1] = input_vars[1].strip()
+            print(input_vars)
+        elif "VS" in parameters:
+            print("Hello")    
+            input_vars += list(parameters.split("VS"))
+            input_vars[0] = input_vars[0].strip()
+            input_vars[1] = input_vars[1].strip()
+            print(input_vars)
+        elif ("Pie_chart" in parameters or '3' in parameters):
+            parameters+=" vs "
+            input_vars += list(parameters.split("vs"))
+            input_vars[0] = input_vars[0].strip()
+            print(input_vars)
         else:
+            flag1=1
+        #Check if chart type passed in the first part of input_vars is in charts list
+        # Store the number of independent variables in num_of_independent
+        #Number of independent variables can be found using the length of variables before vs
+        #Subtract 1 since there can be chart_type entered, if not entered chart_type then don't subtract 1 
+        if flag1==1:
             pass
+        else:
+            if(input_vars[0].split()[0].capitalize() in charts): 
+                chart_type = charts.index(input_vars[0].split()[0].capitalize())+1
+                num_of_independent = len(input_vars[0].split())-1
+                params = params+input_vars[0].split()[1:]+input_vars[1].split()
+                print(chart_type, charts[chart_type-1]) 
+            elif(input_vars[0].split()[0] in ['1','2','3','4']):
+                chart_type = int(input_vars[0].split()[0])
+                num_of_independent = len(input_vars[0].split())-1
+                params = params+input_vars[0].split()[1:]+input_vars[1].split()
+                print(chart_type, charts[chart_type-1])  
+            elif (input_vars[0].split()[0] in headers):
+                #Default chart type is Pairplot
+                chart_type = 1
+                num_of_independent = len(input_vars[0].split())
+                params = params+[input_vars[0].split()[0]]+input_vars[1].split()
+                print(chart_type, charts[chart_type-1])  
+            else:
+                flag1 = 1 
+            if flag1==1:
+                pass    
+            input_vars = [num_of_independent]+[charts[chart_type-1]]+params
+            print(input_vars)
+            print(params)
+            for index, ind_vars in enumerate(params):
+                flag = 0
+                # Read each character in params[n]
+                for char in ind_vars:
+                    if char in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]:
+                        continue
+                    else:
+                        flag = 1
+                        break
+                if flag == 0:
+                    params[index] = headers[int(ind_vars)]
+                    input_vars[index + 2] = headers[int(ind_vars)]
+                elif flag == 1:
+                    # Case when params[n] is not an Integer
+                    if (
+                        ind_vars.lower().capitalize() not in headers
+                        and ind_vars.lower() not in headers
+                        and ind_vars.upper() not in headers
+                        and ind_vars not in headers
+                    ):
+                        flag = 2
+                        break
+                    else:
+                        for index, header in enumerate(headers):
+                            if ind_vars.lower() == header.lower():
+                                params[params.index(header)] = header
+                                input_vars[params.index(header) + 2] = header
+                        pass
+
+            if flag != 2:
+                ind_variable = input_vars[2 : 2 + num_of_independent]
+                dep_variable = input_vars[num_of_independent + 2 :]
+                print("The independent variables are\n", ind_variable)
+                print("The dependent variables are \n", dep_variable)
+                df = self._df
+                try:
+                    if chart_type == 1:
+                        plt.style.use("seaborn")
+                        fig = sns.pairplot(
+                            x_vars=ind_variable, y_vars=dep_variable, data=df
+                        )
+                        for ax in fig.axes.flat[:2]:
+                            ax.tick_params(axis="x", labelrotation=90)
+                            fig.fig.set_size_inches(20, 20)
+                        plt.title("PAIRPLOT")
+                        plt.tight_layout(pad=10)
+                        plt.show()
+                    elif chart_type == 2:
+                        for ind_vars in ind_variable:
+                            for dep_vars in dep_variable:
+                                data_x = df[ind_vars]
+                                data_y = df[dep_vars]
+                                plt.style.use("seaborn")
+                                fig = plt.bar(data_x, data_y, color="blue")
+                                plt.xlabel(ind_vars)
+                                plt.ylabel(dep_vars)
+                                plt.title("BAR PLOT")
+                                plt.tight_layout(pad=6)
+                                plt.show()
+                    elif chart_type == 3:
+                        for ind_vars in ind_variable:
+                            df[ind_vars].value_counts().plot.pie(
+                            autopct="%0.2f%%", radius=1.4
+                        )
+                            plt.title("PIE PLOT")
+                            plt.show()
+                        for dep_vars in dep_variable:
+                            df[dep_vars].value_counts().plot.pie(
+                            autopct="%0.2f%%", radius=1.4
+                        )
+                            plt.title("PIE PLOT")
+                            plt.show()
+                    elif chart_type == 4:
+                        for ind_vars in ind_variable:
+                            for dep_vars in dep_variable:
+                                plt.style.use("seaborn")
+                                plt.scatter(df[ind_vars], df[dep_vars])
+                                plt.title(f"{ind_vars} vs {dep_vars}")
+                                plt.tight_layout(pad=6)
+                                plt.show()
+                except Exception as e:
+                    print(e)
+                else:
+                    pass
+            else:
+                pass
 
     def _on_enter_pressed(self, event):
         msg = self.msg_entry.get()
