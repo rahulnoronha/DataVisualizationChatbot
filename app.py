@@ -154,7 +154,7 @@ class ChatApplication:
             font=FONT_BOLD,
             width=10,
             bg=BG_GRAY,
-            command=encode,
+            command=self.encode,
         )
         input_button.place(relx=0.48, rely=0.008, relheight=0.06, relwidth=0.22)
         # Help Button
@@ -611,74 +611,79 @@ class ChatApplication:
         self._setup_feedback()
 
 
-def encode():
-    """
-    On clicking input_csv button this function is called. It takes in no parameters.
-    Use a filedialog.askopenfile method to get the file name of the input csv.
-    Then using the get_csvtodb method pass the input file path and store the csv as a Table in the
-    database called Visual_Chatbot_Database, and name the table according to the csv file imported.
-    Then add the intents to intents.json using file methods open, read, write.
-    Store the table name in a text file called imported_file.txt.
-    """
-    try:
-        file1 = filedialog.askopenfile(
-            defaultextension=".csv",
-            filetypes=[("Comma Separated Value", "*.csv"), ("All Files", "*.*")],
-        )
-        input_file_path = file1.name
-        get_csvtodb(input_file_path)
-        print(input_file_path)
-        file_name = Path(input_file_path).stem
-        imported_files.append(file_name)
+    def encode(self):
+        """
+        On clicking input_csv button this function is called. It takes in no parameters.
+        Use a filedialog.askopenfile method to get the file name of the input csv.
+        Then using the get_csvtodb method pass the input file path and store the csv as a Table in the
+        database called Visual_Chatbot_Database, and name the table according to the csv file imported.
+        Then add the intents to intents.json using file methods open, read, write.
+        Store the table name in a text file called imported_file.txt.
+        """
+        try:
+            file1 = filedialog.askopenfile(
+                defaultextension=".csv",
+                filetypes=[("Comma Separated Value", "*.csv"), ("All Files", "*.*")],
+            )
+            input_file_path = file1.name
+            returned = get_csvtodb(input_file_path)
+            if (returned==-1):
+                print("Can't automatically clean data")
+                msg = "CSV is unclean and can't be cleaned automatically.Please do a manual cleaning and retry"
+                self._insert_message(msg, "You")   
+            else:
+                print(input_file_path)
+                file_name = Path(input_file_path).stem
+                imported_files.append(file_name)
 
-        # Check if the Database Table exists in the json file
-        flag = 0
-        with open("intents.json", "r") as f:
-            read = f.readlines()
-            for sentence in read:
-                line = sentence.split()
-                if f'"{file_name}Visual_Create"' in line:
-                    flag = 1
-                    break
+                # Check if the Database Table exists in the json file
+                flag = 0
+                with open("intents.json", "r") as f:
+                    read = f.readlines()
+                    for sentence in read:
+                        line = sentence.split()
+                        if f'"{file_name}Visual_Create"' in line:
+                            flag = 1
+                            break
+                        else:
+                            pass
+
+                # Add intents.json entry for imported Data Table if it doesn't exists in the json file already
+                if flag == 0:
+                    # Write the json data to intents.json using open, write, seek, truncate, read, readlines, writelines methods
+                    with open("intents.json", "r+") as f:
+                        lines = f.readlines()
+                        f.seek(0)
+                        f.truncate()
+                        f.writelines(lines[0:-2])
+                        f.write(",{\n")
+                        f.write('      "tag" : "{0}",\n'.format(file_name))
+                        f.write('      "patterns" : [\n')
+                        f.write('        "{0} data",\n '.format(file_name))
+                        f.write(
+                            '        "Show me a visualization of {0}"\n      ],'.format(
+                                file_name
+                            )
+                        )
+                        f.write('      "responses" : [\n')
+                        f.write('        "{0}Visual_Create"\n'.format(file_name))
+                        f.write("      ]\n")
+                        f.write("    }\n")
+                        f.write("\n")
+                        f.write("  ]\n")
+                        f.write("}")
+                        f.write("\n")
+                    # Store imported csv dataset names in a file
+                    with open("imported_file.txt", "a") as f:
+                        f.write(imported_files[-1])
+                        f.write(" ")
+                    import train
+
+                    restart()
                 else:
                     pass
-
-        # Add intents.json entry for imported Data Table if it doesn't exists in the json file already
-        if flag == 0:
-            # Write the json data to intents.json using open, write, seek, truncate, read, readlines, writelines methods
-            with open("intents.json", "r+") as f:
-                lines = f.readlines()
-                f.seek(0)
-                f.truncate()
-                f.writelines(lines[0:-2])
-                f.write(",{\n")
-                f.write('      "tag" : "{0}",\n'.format(file_name))
-                f.write('      "patterns" : [\n')
-                f.write('        "{0} data",\n '.format(file_name))
-                f.write(
-                    '        "Show me a visualization of {0}"\n      ],'.format(
-                        file_name
-                    )
-                )
-                f.write('      "responses" : [\n')
-                f.write('        "{0}Visual_Create"\n'.format(file_name))
-                f.write("      ]\n")
-                f.write("    }\n")
-                f.write("\n")
-                f.write("  ]\n")
-                f.write("}")
-                f.write("\n")
-            # Store imported csv dataset names in a file
-            with open("imported_file.txt", "a") as f:
-                f.write(imported_files[-1])
-                f.write(" ")
-            import train
-
-            restart()
-        else:
-            pass
-    except Exception as e:
-        print(e)
+        except Exception as e:
+            print(e)
 
 
 def help():
