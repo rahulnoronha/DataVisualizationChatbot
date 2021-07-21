@@ -49,7 +49,7 @@ def main():
     Create object of class ChatApplication which is created by __init__
     Use the run method of the app to create the main window.
     """
-    app = ChatApplication()
+    app = ChatApp()
     app.run()
 
 
@@ -73,9 +73,9 @@ def check_json(json_text):
         return False
 
 
-class ChatApplication:
+class ChatApp:
     """
-    Chat Application class: Has it's own set of attributes and methods which are part of the tkinter GUI
+    Chat Application class: Has its own set of attributes and methods which are part of the tkinter GUI
     """
 
     def __init__(self):
@@ -178,6 +178,11 @@ class ChatApplication:
         feedback_button.place(relx=0.62, rely=0.4, relheight=0.4, relwidth=0.3)
 
     def _setup_visual(self, headers, df):
+        """
+        Used to create a separate window for visualizations. Here the DataFrame can be viewed using 
+        DataFrame button and also Enter button can be used in addition to the Visualize button to enter plaintext
+        query and view the visualizations.
+        """
         self._headers = headers
         self._df = df
         self.sub = Toplevel()
@@ -251,6 +256,11 @@ class ChatApplication:
         self.sub.mainloop()
 
     def _setup_feedback(self):
+        """
+        Used to create a separate window for feedback input. Here the feedback can be provided in the given format
+        Send button and also Shift+Enter can be used to enter plaintext feedback query and 
+        on success the retraining can be done for the model. Relevant error messages are displayed as necessary.         
+        """
         self.feed = Toplevel()
         self.feed.title("Feedback")
         self.feed.resizable(width=True, height=True)
@@ -316,7 +326,7 @@ class ChatApplication:
 
     def _on_enter_fed(self, event):
         """
-        This function is used to get the entry of data on press of the send button
+        This function is used to get the entry of feedback data on press of the send button
         """
         flag = 0
         msg4 = self.msg_entry2.get()
@@ -406,26 +416,14 @@ class ChatApplication:
         Function is used to get the parameters list and check if it is in the correct format.
         If yes then based on the input, the correct visualization is displayed, else relevant
         error message needs to be displayed.
-        1 1 Total Fuel
-
-        1 is to select pairplot
-
-        1 is the number of independent variables we are using in the plot
-
-        Total is the independent variable since in this case we selected
-        1 for independent variables
-
-        Fuel will be the variable we are trying to see the relationship of
-        Total with
-
-        TODO: Make Query In the format: Total consumption vs Fuel
+        
         Plot_name Indep vars list vs Dependent vars list
         """
         parameters = self.msg_entry1.get()
         print(parameters)
         flag1 = 0
         flag = 0
-        chart_type = 0
+        chart_type = 1
         num_of_independent = 0
         headers = self._headers
         params = list()
@@ -468,12 +466,12 @@ class ChatApplication:
                 num_of_independent = len(input_vars[0].split())-1
                 params = params+input_vars[0].split()[1:]+input_vars[1].split()
                 print(chart_type, charts[chart_type-1]) 
-            elif(input_vars[0].split()[0] in ['1','2','3','4']):
+            elif(input_vars[0].split()[0].lower() in ['1','2','3','4']):
                 chart_type = int(input_vars[0].split()[0])
                 num_of_independent = len(input_vars[0].split())-1
                 params = params+input_vars[0].split()[1:]+input_vars[1].split()
                 print(chart_type, charts[chart_type-1])  
-            elif (input_vars[0].split()[0] in headers):
+            elif (input_vars[0].split()[0].lower() in headers):
                 #Default chart type is Pairplot
                 chart_type = 1
                 num_of_independent = len(input_vars[0].split())
@@ -576,6 +574,9 @@ class ChatApplication:
 
     
     def _setup_treeview(self):
+        """
+        The Function to Set up the treeview in a new Window and to display DataFrame
+        """
         self.tree = Toplevel()
         self.tree.resizable(width=True, height=True) 
         self.tree.configure(width=470, height=550, bg=BG_COLOUR4)        
@@ -606,14 +607,21 @@ class ChatApplication:
         
 
     def call_tree(self):
+        """Call the function to Set up the treeview to display DataFrame"""
         self._setup_treeview()
         
     
     def _on_enter_pressed(self, event):
+        """
+        This function is used to get the response of query on press of the send button or on Enter key
+        """
         msg = self.msg_entry.get()
         self._insert_message(msg, "You")
 
     def _insert_message(self, msg, sender):
+        """
+        Depending on user input and response from chatbot perform either display of the return message or open relevant window
+        """
         if not msg:
             return
 

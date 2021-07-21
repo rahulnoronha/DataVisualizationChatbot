@@ -92,5 +92,15 @@
       ]
     }
 
+,{
+      "tag" : "airlines",
+      "patterns" : [
+        "airlines data",
+         "Show me a visualization of airlines"
+      ],      "responses" : [
+        "airlinesVisual_Create"
+      ]
+    }
+
   ]
 }
