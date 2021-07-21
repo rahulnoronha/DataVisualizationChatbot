@@ -15,22 +15,14 @@ def get_csvtodb(filename):
     text = "postgresql+psycopg2:///?user="+user+"&password="+passw+"&database="+database
     postgreSQLconnection = create_engine(text)
     postgreSQLconnection = postgreSQLconnection.connect()
-    df = pd.read_csv(filename)
+    try:
+        df = pd.read_csv(filename)
+    except Exception as e:    
+        df = pd.read_csv(filename,encoding='Latin-1')
     #Cleaning the DataFrame
     #Making headers consistent using list comprehension
     df.columns = [c.strip().lower().replace(' ', '_') for c in df.columns]
-    #Checking for null values
-    if (df.isnull().sum().sum()!=0):
-        #Clean Data
-        try:
-            for column in df.columns:
-                df[column].fillna((df[column].mean()), inplace=True)
-        except Exception as e:
-            print(e)
-            return -1
-    else:
-        #Case when the data doesn't have null values
-        pass
+  
     try:
         dbase = df.to_sql(name,postgreSQLconnection,if_exists='fail')
     except ValueError as vx:

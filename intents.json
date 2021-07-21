@@ -101,6 +101,15 @@
         "airlinesVisual_Create"
       ]
     }
+,{
+      "tag" : "sales_data_sample",
+      "patterns" : [
+        "sales_data_sample data",
+         "Show me a visualization of sales_data_sample"
+      ],      "responses" : [
+        "sales_data_sampleVisual_Create"
+      ]
+    }
 
   ]
 }
