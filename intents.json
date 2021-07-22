@@ -111,5 +111,15 @@
       ]
     }
 
+,{
+      "tag" : "superstore_dataset2011-2015",
+      "patterns" : [
+        "superstore_dataset2011-2015 data",
+         "Show me a visualization of superstore_dataset2011-2015"
+      ],      "responses" : [
+        "superstore_dataset2011-2015Visual_Create"
+      ]
+    }
+
   ]
 }
