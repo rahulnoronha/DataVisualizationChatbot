@@ -430,19 +430,17 @@ class ChatApp:
         input_vars = list()
         #input_vars = list(parameters.split())
         if "vs" in parameters:
-            print("Hello")
             input_vars += list(parameters.split("vs"))
             input_vars[0] = input_vars[0].strip()
             input_vars[1] = input_vars[1].strip()
             print(input_vars)
+
         elif "vs" in parameters:
-            print("Hello")
             input_vars += list(parameters.split("Vs"))
             input_vars[0] = input_vars[0].strip()
             input_vars[1] = input_vars[1].strip()
             print(input_vars)
         elif "VS" in parameters:
-            print("Hello")    
             input_vars += list(parameters.split("VS"))
             input_vars[0] = input_vars[0].strip()
             input_vars[1] = input_vars[1].strip()
@@ -453,7 +451,41 @@ class ChatApp:
             input_vars[0] = input_vars[0].strip()
             print(input_vars)
         else:
-            flag1=1
+            #When the name of the chart type is not given then we try to perform matched with some template formats that we defined.
+            if(' by ' in parameters):
+                
+                input_vars += list(parameters.split("by"))
+                temp = input_vars[0].strip()
+                input_vars[0] = "Bar_chart "+input_vars[1].strip()
+                input_vars[1] = temp.strip()
+                parameters = "Bar_chart "+ input_vars[0]+" vs " +input_vars[1]
+            elif(' wise ' in parameters):
+                if(' where ' in parameters and ' is ' in parameters):
+                    parameters1 = parameters[0:parameters.find(' where ')]
+                    head = parameters[len(parameters1)+len(' where '):parameters.find(' is ')]
+                    query = parameters[parameters.find(' is ')+3:].strip()
+                    input_vars += list(parameters1.split("wise"))
+                    input_vars[0] = "Bar_chart "+input_vars[0].strip()
+                    input_vars[1] = input_vars[1].strip()
+                    parameters = input_vars[0]+" vs " +input_vars[1]
+                    if head.lower() in headers:
+                        self._df=self._df[self._df[head] == query]
+                        print(self._df)
+                    else:
+                        pass
+                elif('distribution' in parameters):
+                    parameters = parameters[0:parameters.find('distribution')]
+                    input_vars += list(parameters.split("wise"))
+                    input_vars[0] = "Scatterplot "+input_vars[0].strip()
+                    input_vars[1] = input_vars[1].strip()
+                    parameters = "Scatterplot "+ input_vars[0]+" vs " +input_vars[1]
+                else:
+                    input_vars += list(parameters.split("wise"))
+                    input_vars[0] = "Bar_chart "+input_vars[0].strip()
+                    input_vars[1] = input_vars[1].strip()
+                    parameters = "Bar_chart "+ input_vars[0]+" vs " +input_vars[1]
+            else:
+                flag1=1
         #Check if chart type passed in the first part of input_vars is in charts list
         # Store the number of independent variables in num_of_independent
         #Number of independent variables can be found using the length of variables before vs
