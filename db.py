@@ -7,6 +7,10 @@ import keyring
 
 def get_csvtodb(filename):
     #Connect to the Database
+    """
+    Connect to the local host Database and add the input csv to the localhost PostgreSQL database as a table with all headings as lowercase, and underscore separated formatted strings. 
+    Returns -1 or -2 on different errors.
+    """
     name = filename[:-4]
     name = Path(filename).stem
     passw = keyring.get_password("Visual_Chatbot_Database", "rahul")

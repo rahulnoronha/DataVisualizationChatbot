@@ -46,7 +46,7 @@ charts = ["Pairplot", "Bar_chart", "Pie_chart", "Scatterplot"]
 # Main Function
 def main():
     """
-    Create object of class ChatApplication which is created by __init__
+    Create object of class ChatApp which is created by __init__
     Use the run method of the app to create the main window.
     """
     app = ChatApp()
@@ -66,6 +66,9 @@ def restart():
 
 # To check if a string is in json format
 def check_json(json_text):
+    """
+    Checks if the string passed into the function as parameter is json formatted string or not and return a Boolean True if it is in json format and False otherwise
+    """
     try:
         json.loads(json_text)
         return True
@@ -453,14 +456,48 @@ class ChatApp:
         else:
             #When the name of the chart type is not given then we try to perform matched with some template formats that we defined.
             if(' by ' in parameters):
-                
-                input_vars += list(parameters.split("by"))
-                temp = input_vars[0].strip()
-                input_vars[0] = "Bar_chart "+input_vars[1].strip()
-                input_vars[1] = temp.strip()
-                parameters = "Bar_chart "+ input_vars[0]+" vs " +input_vars[1]
-            elif(' wise ' in parameters):
                 if(' where ' in parameters and ' is ' in parameters):
+                    parameters1 = parameters[0:parameters.find(' where ')]
+                    head = parameters[len(parameters1)+len(' where '):parameters.find(' is ')]
+                    query = parameters[parameters.find(' is ')+3:].strip()
+                    input_vars += list(parameters1.split("by"))
+                    temp = input_vars[0].strip()
+                    input_vars[0] = "Bar_chart "+input_vars[1].strip()
+                    input_vars[1] = temp.strip()
+                    parameters = input_vars[0]+" vs " +input_vars[1]
+                    if head.lower() in headers:
+                        self._df=self._df[self._df[head.lower()] == query]
+                        print(self._df)
+                    else:
+                        pass
+                else:
+                    input_vars += list(parameters.split("by"))
+                    temp = input_vars[0].strip()
+                    input_vars[0] = "Bar_chart "+input_vars[1].strip()
+                    input_vars[1] = temp.strip()
+                    parameters = input_vars[0]+" vs " +input_vars[1]
+            elif(' wise ' in parameters):
+                if('distribution' in parameters):
+                    if(' where ' in parameters and ' is ' in parameters):
+                        parameters1 = parameters[0:parameters.find('distribution')]
+                        head = parameters[len(parameters1)+len(' where '):parameters.find(' is ')]
+                        query = parameters[parameters.find(' is ')+3:].strip()
+                        input_vars += list(parameters1.split("wise"))
+                        input_vars[0] = "Scatterplot "+input_vars[0].strip()
+                        input_vars[1] = input_vars[1].strip()
+                        parameters = input_vars[0]+" vs " +input_vars[1]
+                        if head.lower() in headers:
+                            self._df=self._df[self._df[head.lower()] == query]
+                            print(self._df)
+                        else:
+                            pass
+                    else:
+                        parameters = parameters[0:parameters.find('distribution')]
+                        input_vars += list(parameters.split("wise"))
+                        input_vars[0] = "Scatterplot "+input_vars[0].strip()
+                        input_vars[1] = input_vars[1].strip()
+                        parameters = input_vars[0]+" vs " +input_vars[1]
+                elif(' where ' in parameters and ' is ' in parameters):
                     parameters1 = parameters[0:parameters.find(' where ')]
                     head = parameters[len(parameters1)+len(' where '):parameters.find(' is ')]
                     query = parameters[parameters.find(' is ')+3:].strip()
@@ -469,21 +506,15 @@ class ChatApp:
                     input_vars[1] = input_vars[1].strip()
                     parameters = input_vars[0]+" vs " +input_vars[1]
                     if head.lower() in headers:
-                        self._df=self._df[self._df[head] == query]
+                        self._df=self._df[self._df[head.lower()] == query]
                         print(self._df)
                     else:
                         pass
-                elif('distribution' in parameters):
-                    parameters = parameters[0:parameters.find('distribution')]
-                    input_vars += list(parameters.split("wise"))
-                    input_vars[0] = "Scatterplot "+input_vars[0].strip()
-                    input_vars[1] = input_vars[1].strip()
-                    parameters = "Scatterplot "+ input_vars[0]+" vs " +input_vars[1]
                 else:
                     input_vars += list(parameters.split("wise"))
                     input_vars[0] = "Bar_chart "+input_vars[0].strip()
                     input_vars[1] = input_vars[1].strip()
-                    parameters = "Bar_chart "+ input_vars[0]+" vs " +input_vars[1]
+                    parameters = input_vars[0]+" vs " +input_vars[1]
             else:
                 flag1=1
         #Check if chart type passed in the first part of input_vars is in charts list
@@ -704,7 +735,6 @@ class ChatApp:
         Then using the get_csvtodb method pass the input file path and store the csv as a Table in the
         database called Visual_Chatbot_Database, and name the table according to the csv file imported.
         Then add the intents to intents.json using file methods open, read, write.
-        Store the table name in a text file called imported_file.txt.
         """
         try:
             file1 = filedialog.askopenfile(
@@ -782,6 +812,9 @@ class ChatApp:
 
 
 def help():
+    """ 
+    Opens the html files locally on the user's default web browser
+    """
     link = "help.html"
     link1 = "run.html"
     webbrowser.open(link)

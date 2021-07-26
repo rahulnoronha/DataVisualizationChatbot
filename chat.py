@@ -30,6 +30,9 @@ bot_name = "DataViz"
 
 
 def get_response(msg):
+    """ 
+    Takes in user input string and returns a response based on the trained model which is stored in data.pth
+    """
     sentence = tokenize(msg)
     X = bag_of_words(sentence, all_words)
     X = X.reshape(1, X.shape[0])
