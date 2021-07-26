@@ -477,20 +477,7 @@ class ChatApp:
                     input_vars[1] = temp.strip()
                     parameters = input_vars[0]+" vs " +input_vars[1]
             elif(' wise ' in parameters):
-                if(' where ' in parameters and ' is ' in parameters):
-                    parameters1 = parameters[0:parameters.find(' where ')]
-                    head = parameters[len(parameters1)+len(' where '):parameters.find(' is ')]
-                    query = parameters[parameters.find(' is ')+3:].strip()
-                    input_vars += list(parameters1.split("wise"))
-                    input_vars[0] = "Bar_chart "+input_vars[0].strip()
-                    input_vars[1] = input_vars[1].strip()
-                    parameters = input_vars[0]+" vs " +input_vars[1]
-                    if head.lower() in headers:
-                        self._df=self._df[self._df[head.lower()] == query]
-                        print(self._df)
-                    else:
-                        pass
-                elif('distribution' in parameters):
+                if('distribution' in parameters):
                     if(' where ' in parameters and ' is ' in parameters):
                         parameters1 = parameters[0:parameters.find('distribution')]
                         head = parameters[len(parameters1)+len(' where '):parameters.find(' is ')]
@@ -510,6 +497,19 @@ class ChatApp:
                         input_vars[0] = "Scatterplot "+input_vars[0].strip()
                         input_vars[1] = input_vars[1].strip()
                         parameters = input_vars[0]+" vs " +input_vars[1]
+                elif(' where ' in parameters and ' is ' in parameters):
+                    parameters1 = parameters[0:parameters.find(' where ')]
+                    head = parameters[len(parameters1)+len(' where '):parameters.find(' is ')]
+                    query = parameters[parameters.find(' is ')+3:].strip()
+                    input_vars += list(parameters1.split("wise"))
+                    input_vars[0] = "Bar_chart "+input_vars[0].strip()
+                    input_vars[1] = input_vars[1].strip()
+                    parameters = input_vars[0]+" vs " +input_vars[1]
+                    if head.lower() in headers:
+                        self._df=self._df[self._df[head.lower()] == query]
+                        print(self._df)
+                    else:
+                        pass
                 else:
                     input_vars += list(parameters.split("wise"))
                     input_vars[0] = "Bar_chart "+input_vars[0].strip()
