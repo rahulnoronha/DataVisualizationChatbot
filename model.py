@@ -17,6 +17,9 @@ class NeuralNet(nn.Module):
         self.relu = nn.ReLU()
     
     def forward(self, x):
+        """ 
+        Define how the model is going to run from input to output.
+        """
         out = self.l1(x)
         out = self.relu(out)
         out = self.l2(out)

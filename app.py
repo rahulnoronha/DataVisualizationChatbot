@@ -46,7 +46,7 @@ charts = ["Pairplot", "Bar_chart", "Pie_chart", "Scatterplot"]
 # Main Function
 def main():
     """
-    Create object of class ChatApplication which is created by __init__
+    Create object of class ChatApp which is created by __init__
     Use the run method of the app to create the main window.
     """
     app = ChatApp()
@@ -66,6 +66,9 @@ def restart():
 
 # To check if a string is in json format
 def check_json(json_text):
+    """
+    Checks if the string passed into the function as parameter is json formatted string or not and return a Boolean True if it is in json format and False otherwise
+    """
     try:
         json.loads(json_text)
         return True
@@ -732,7 +735,6 @@ class ChatApp:
         Then using the get_csvtodb method pass the input file path and store the csv as a Table in the
         database called Visual_Chatbot_Database, and name the table according to the csv file imported.
         Then add the intents to intents.json using file methods open, read, write.
-        Store the table name in a text file called imported_file.txt.
         """
         try:
             file1 = filedialog.askopenfile(
@@ -810,6 +812,9 @@ class ChatApp:
 
 
 def help():
+    """ 
+    Opens the html files locally on the user's default web browser
+    """
     link = "help.html"
     link1 = "run.html"
     webbrowser.open(link)
