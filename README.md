@@ -22,6 +22,11 @@ _____________________________________
 ![Design Document](Images/ChatbotAppFlowDiagram.jpeg)
 _____________________________________
 _____________________________________
+_____________________________________
+_____________________________________
+![Class Design Document](Images/ClassDiagram.png)
+_____________________________________
+_____________________________________
 #### Learn how to Run the Application from [Run Application](Images/run.pdf)
 ####
 
