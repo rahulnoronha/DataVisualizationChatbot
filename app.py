@@ -1,13 +1,13 @@
 import train
 import tkinter
-import pandas as pd
 import matplotlib
 import webbrowser
-import seaborn as sns
 import json
 import keyring
 import os
 import sys
+import seaborn as sns
+import pandas as pd
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
@@ -17,10 +17,7 @@ from chat import get_response, bot_name
 from db import get_csvtodb
 from pathlib import Path
 from sqlalchemy import create_engine
-from pathlib import Path
 from matplotlib import pyplot as plt
-
-
 
 
 # Colours
@@ -29,19 +26,22 @@ BG_GRAY = "#A9A9A9"  # dark gray
 BG_COLOUR = "#87CEEB"  # sky blue
 BG_COLOUR1 = "#FFFFFF"  # White
 BG_COLOUR2 = "#F5F5DC"  # beige
-BG_COLOUR3 = "#7F87CE" #Slightly Saturated blue
-BG_COLOUR4 = "#000000" #Black
+BG_COLOUR3 = "#7F87CE"  # Slightly Saturated blue
+BG_COLOUR4 = "#000000"  # Black
 TEXT_COLOUR = "#000000"  # Black
+
 
 # Fonts
 # Font used to display text onto tkinter GUI
 FONT = "Helvetica 14"
 FONT_BOLD = "Helvetica 13 bold"
 
+
 # To store a list of already imported Dataset CSVs
 imported_files = []
 # To store a list of the possible visualization types
 charts = ["Pairplot", "Bar_chart", "Pie_chart", "Scatterplot"]
+
 
 # Main Function
 def main():
@@ -138,8 +138,10 @@ class ChatApp:
         bottom_label = Label(self.window, bg=BG_GRAY, height=80)
         bottom_label.place(relwidth=1, rely=0.825)
         # message entry box
-        self.msg_entry = Entry(bottom_label, bg=BG_COLOUR1, fg=TEXT_COLOUR, font=FONT)
-        self.msg_entry.place(relwidth=0.74, relheight=0.06, rely=0.008, relx=0.011)
+        self.msg_entry = Entry(bottom_label, bg=BG_COLOUR1,
+                               fg=TEXT_COLOUR, font=FONT)
+        self.msg_entry.place(relwidth=0.74, relheight=0.06,
+                             rely=0.008, relx=0.011)
         self.msg_entry.focus()
         self.msg_entry.bind("<Return>", self._on_enter_pressed)
 
@@ -163,7 +165,8 @@ class ChatApp:
             bg=BG_GRAY,
             command=self.encode,
         )
-        input_button.place(relx=0.48, rely=0.008, relheight=0.06, relwidth=0.22)
+        input_button.place(relx=0.48, rely=0.008,
+                           relheight=0.06, relwidth=0.22)
         # Help Button
         help_button = Button(
             bottom_label, text="Help", font=FONT_BOLD, width=4, bg=BG_GRAY, command=help
@@ -232,8 +235,10 @@ class ChatApp:
             msg1 += f"{i} {j}\n"
         self.text_widget1.insert(END, msg1)
         # message entry box
-        self.msg_entry1 = Entry(bottom_label1, bg=BG_COLOUR1, fg=TEXT_COLOUR, font=FONT)
-        self.msg_entry1.place(relwidth=0.74, relheight=0.06, rely=0.008, relx=0.011)
+        self.msg_entry1 = Entry(
+            bottom_label1, bg=BG_COLOUR1, fg=TEXT_COLOUR, font=FONT)
+        self.msg_entry1.place(
+            relwidth=0.74, relheight=0.06, rely=0.008, relx=0.011)
         self.msg_entry1.focus()
         self.msg_entry1.bind("<Return>", self._on_enter_vis)
         # send button
@@ -245,7 +250,8 @@ class ChatApp:
             bg=BG_GRAY,
             command=lambda: self._on_enter_vis(None),
         )
-        send_button1.place(relx=0.70, rely=0.008, relheight=0.06, relwidth=0.22)
+        send_button1.place(relx=0.70, rely=0.008,
+                           relheight=0.06, relwidth=0.22)
         # help button
         help_button1 = Button(
             head_label1, text="Help", font=FONT_BOLD, width=4, bg=BG_GRAY, command=help
@@ -305,8 +311,10 @@ class ChatApp:
         msg2 += 'Example:\n\n Query: What is your age?\n\n\nReply: I am not that old\n\n\nUser Entry:\n\n\ndescription_tag_of_feeback_without_spaces|\n"What is your age?",\n"How old are you?"|\n"I am not that old","I am quite young"\n\nEnter Send Button after typing message or press Shift Enter'
         self.text_widget2.insert(END, msg2)
         # message entry box
-        self.msg_entry2 = Entry(bottom_label2, bg=BG_COLOUR1, fg=TEXT_COLOUR, font=FONT)
-        self.msg_entry2.place(relwidth=0.64, relheight=0.06, rely=0.008, relx=0.011)
+        self.msg_entry2 = Entry(
+            bottom_label2, bg=BG_COLOUR1, fg=TEXT_COLOUR, font=FONT)
+        self.msg_entry2.place(
+            relwidth=0.64, relheight=0.06, rely=0.008, relx=0.011)
         self.msg_entry2.focus()
         self.msg_entry2.bind("<Shift_L><Return>", self._on_enter_fed)
         self.msg_entry2.bind("<Shift_R><Return>", self._on_enter_fed)
@@ -319,7 +327,8 @@ class ChatApp:
             bg=BG_GRAY,
             command=lambda: self._on_enter_fed(None),
         )
-        send_button1.place(relx=0.70, rely=0.008, relheight=0.06, relwidth=0.22)
+        send_button1.place(relx=0.70, rely=0.008,
+                           relheight=0.06, relwidth=0.22)
         # help button
         help_button1 = Button(
             head_label2, text="Help", font=FONT_BOLD, width=4, bg=BG_GRAY, command=help
@@ -341,8 +350,8 @@ class ChatApp:
             for intent in intents["intents"]:
                 tag = intent["tag"]
                 tags.append(tag)
-            msg = msg4[0 : msg4.find("|")]
-            rem_msg = msg4[msg4.find("|") + 1 :]
+            msg = msg4[0: msg4.find("|")]
+            rem_msg = msg4[msg4.find("|") + 1:]
             if msg not in tags:
                 flag = 0
             else:
@@ -351,8 +360,8 @@ class ChatApp:
             msg3 = ",{"
             msg3 += f'"tag" : "{msg}",'
             # Adding patterns to json
-            patterns_list = rem_msg[0 : rem_msg.find("|")].strip()
-            rem_msg = rem_msg[rem_msg.find("|") + 1 :]
+            patterns_list = rem_msg[0: rem_msg.find("|")].strip()
+            rem_msg = rem_msg[rem_msg.find("|") + 1:]
             if len(patterns_list) > 0:
                 msg3 += f'"patterns" : [{patterns_list}],'
                 responses_list = rem_msg.strip()
@@ -419,7 +428,7 @@ class ChatApp:
         Function is used to get the parameters list and check if it is in the correct format.
         If yes then based on the input, the correct visualization is displayed, else relevant
         error message needs to be displayed.
-        
+
         Plot_name Indep vars list vs Dependent vars list
         """
         parameters = self.msg_entry1.get()
@@ -449,24 +458,25 @@ class ChatApp:
             input_vars[1] = input_vars[1].strip()
             print(input_vars)
         elif ("Pie_chart" in parameters or '3' in parameters):
-            parameters+=" vs "
+            parameters += " vs "
             input_vars += list(parameters.split("vs"))
             input_vars[0] = input_vars[0].strip()
             print(input_vars)
         else:
-            #When the name of the chart type is not given then we try to perform matched with some template formats that we defined.
+            # When the name of the chart type is not given then we try to perform matched with some template formats that we defined.
             if(' by ' in parameters):
                 if(' where ' in parameters and ' is ' in parameters):
                     parameters1 = parameters[0:parameters.find(' where ')]
-                    head = parameters[len(parameters1)+len(' where '):parameters.find(' is ')]
+                    head = parameters[len(parameters1) +
+                                      len(' where '):parameters.find(' is ')]
                     query = parameters[parameters.find(' is ')+3:].strip()
                     input_vars += list(parameters1.split("by"))
                     temp = input_vars[0].strip()
                     input_vars[0] = "Bar_chart "+input_vars[1].strip()
                     input_vars[1] = temp.strip()
-                    parameters = input_vars[0]+" vs " +input_vars[1]
+                    parameters = input_vars[0]+" vs " + input_vars[1]
                     if head.lower() in headers:
-                        self._df=self._df[self._df[head.lower()] == query]
+                        self._df = self._df[self._df[head.lower()] == query]
                         print(self._df)
                     else:
                         pass
@@ -475,38 +485,43 @@ class ChatApp:
                     temp = input_vars[0].strip()
                     input_vars[0] = "Bar_chart "+input_vars[1].strip()
                     input_vars[1] = temp.strip()
-                    parameters = input_vars[0]+" vs " +input_vars[1]
+                    parameters = input_vars[0]+" vs " + input_vars[1]
             elif(' wise ' in parameters):
                 if('distribution' in parameters):
                     if(' where ' in parameters and ' is ' in parameters):
-                        parameters1 = parameters[0:parameters.find('distribution')]
-                        head = parameters[len(parameters1)+len(' where '):parameters.find(' is ')]
+                        parameters1 = parameters[0:parameters.find(
+                            'distribution')]
+                        head = parameters[len(
+                            parameters1)+len(' where '):parameters.find(' is ')]
                         query = parameters[parameters.find(' is ')+3:].strip()
                         input_vars += list(parameters1.split("wise"))
                         input_vars[0] = "Scatterplot "+input_vars[0].strip()
                         input_vars[1] = input_vars[1].strip()
-                        parameters = input_vars[0]+" vs " +input_vars[1]
+                        parameters = input_vars[0]+" vs " + input_vars[1]
                         if head.lower() in headers:
-                            self._df=self._df[self._df[head.lower()] == query]
+                            self._df = self._df[self._df[head.lower()]
+                                                == query]
                             print(self._df)
                         else:
                             pass
                     else:
-                        parameters = parameters[0:parameters.find('distribution')]
+                        parameters = parameters[0:parameters.find(
+                            'distribution')]
                         input_vars += list(parameters.split("wise"))
                         input_vars[0] = "Scatterplot "+input_vars[0].strip()
                         input_vars[1] = input_vars[1].strip()
-                        parameters = input_vars[0]+" vs " +input_vars[1]
+                        parameters = input_vars[0]+" vs " + input_vars[1]
                 elif(' where ' in parameters and ' is ' in parameters):
                     parameters1 = parameters[0:parameters.find(' where ')]
-                    head = parameters[len(parameters1)+len(' where '):parameters.find(' is ')]
+                    head = parameters[len(parameters1) +
+                                      len(' where '):parameters.find(' is ')]
                     query = parameters[parameters.find(' is ')+3:].strip()
                     input_vars += list(parameters1.split("wise"))
                     input_vars[0] = "Bar_chart "+input_vars[0].strip()
                     input_vars[1] = input_vars[1].strip()
-                    parameters = input_vars[0]+" vs " +input_vars[1]
+                    parameters = input_vars[0]+" vs " + input_vars[1]
                     if head.lower() in headers:
-                        self._df=self._df[self._df[head.lower()] == query]
+                        self._df = self._df[self._df[head.lower()] == query]
                         print(self._df)
                     else:
                         pass
@@ -514,36 +529,38 @@ class ChatApp:
                     input_vars += list(parameters.split("wise"))
                     input_vars[0] = "Bar_chart "+input_vars[0].strip()
                     input_vars[1] = input_vars[1].strip()
-                    parameters = input_vars[0]+" vs " +input_vars[1]
+                    parameters = input_vars[0]+" vs " + input_vars[1]
             else:
-                flag1=1
-        #Check if chart type passed in the first part of input_vars is in charts list
+                flag1 = 1
+        # Check if chart type passed in the first part of input_vars is in charts list
         # Store the number of independent variables in num_of_independent
-        #Number of independent variables can be found using the length of variables before vs
-        #Subtract 1 since there can be chart_type entered, if not entered chart_type then don't subtract 1 
-        if flag1==1:
+        # Number of independent variables can be found using the length of variables before vs
+        # Subtract 1 since there can be chart_type entered, if not entered chart_type then don't subtract 1
+        if flag1 == 1:
             pass
         else:
-            if(input_vars[0].split()[0].capitalize() in charts): 
-                chart_type = charts.index(input_vars[0].split()[0].capitalize())+1
+            if(input_vars[0].split()[0].capitalize() in charts):
+                chart_type = charts.index(
+                    input_vars[0].split()[0].capitalize())+1
                 num_of_independent = len(input_vars[0].split())-1
                 params = params+input_vars[0].split()[1:]+input_vars[1].split()
-                print(chart_type, charts[chart_type-1]) 
-            elif(input_vars[0].split()[0].lower() in ['1','2','3','4']):
+                print(chart_type, charts[chart_type-1])
+            elif(input_vars[0].split()[0].lower() in ['1', '2', '3', '4']):
                 chart_type = int(input_vars[0].split()[0])
                 num_of_independent = len(input_vars[0].split())-1
                 params = params+input_vars[0].split()[1:]+input_vars[1].split()
-                print(chart_type, charts[chart_type-1])  
+                print(chart_type, charts[chart_type-1])
             elif (input_vars[0].split()[0].lower() in headers):
-                #Default chart type is Pairplot
+                # Default chart type is Pairplot
                 chart_type = 1
                 num_of_independent = len(input_vars[0].split())
-                params = params+[input_vars[0].split()[0]]+input_vars[1].split()
-                print(chart_type, charts[chart_type-1])  
+                params = params+[input_vars[0].split()[0]] + \
+                    input_vars[1].split()
+                print(chart_type, charts[chart_type-1])
             else:
-                flag1 = 1 
-            if flag1==1:
-                pass    
+                flag1 = 1
+            if flag1 == 1:
+                pass
             input_vars = [num_of_independent]+[charts[chart_type-1]]+params
             print(input_vars)
             params = [p.lower() for p in params]
@@ -578,8 +595,8 @@ class ChatApp:
                         pass
 
             if flag != 2:
-                ind_variable = input_vars[2 : 2 + num_of_independent]
-                dep_variable = input_vars[num_of_independent + 2 :]
+                ind_variable = input_vars[2: 2 + num_of_independent]
+                dep_variable = input_vars[num_of_independent + 2:]
                 print("The independent variables are\n", ind_variable)
                 print("The dependent variables are \n", dep_variable)
                 df = self._df
@@ -610,14 +627,14 @@ class ChatApp:
                     elif chart_type == 3:
                         for ind_vars in ind_variable:
                             df[ind_vars].value_counts().plot.pie(
-                            autopct="%0.2f%%", radius=1.4
-                        )
+                                autopct="%0.2f%%", radius=1.4
+                            )
                             plt.title("PIE PLOT")
                             plt.show()
                         for dep_vars in dep_variable:
                             df[dep_vars].value_counts().plot.pie(
-                            autopct="%0.2f%%", radius=1.4
-                        )
+                                autopct="%0.2f%%", radius=1.4
+                            )
                             plt.title("PIE PLOT")
                             plt.show()
                     elif chart_type == 4:
@@ -635,14 +652,13 @@ class ChatApp:
             else:
                 pass
 
-    
     def _setup_treeview(self):
         """
         The Function to Set up the treeview in a new Window and to display DataFrame
         """
         self.tree = Toplevel()
-        self.tree.resizable(width=True, height=True) 
-        self.tree.configure(width=470, height=550, bg=BG_COLOUR4)        
+        self.tree.resizable(width=True, height=True)
+        self.tree.configure(width=470, height=550, bg=BG_COLOUR4)
         df = self._df
 
         # Frame for TreeView
@@ -650,30 +666,30 @@ class ChatApp:
         frame1.place(relx=0.1, rely=0.1, relheight=0.8, relwidth=0.8)
         # Treeview Widget
         tv1 = ttk.Treeview(frame1)
-        tv1.place(relheight=1, relwidth=1) 
+        tv1.place(relheight=1, relwidth=1)
 
-        treescrolly = Scrollbar(frame1, orient="vertical", command=tv1.yview) 
-        treescrollx = Scrollbar(frame1, orient="horizontal", command=tv1.xview) 
-        tv1.configure(xscrollcommand=treescrollx.set, yscrollcommand=treescrolly.set) 
-        treescrollx.pack(side="bottom", fill="x") 
-        treescrolly.pack(side="right", fill="y") 
+        treescrolly = Scrollbar(frame1, orient="vertical", command=tv1.yview)
+        treescrollx = Scrollbar(frame1, orient="horizontal", command=tv1.xview)
+        tv1.configure(xscrollcommand=treescrollx.set,
+                      yscrollcommand=treescrolly.set)
+        treescrollx.pack(side="bottom", fill="x")
+        treescrolly.pack(side="right", fill="y")
         tv1.delete(*tv1.get_children())
         tv1["column"] = list(df.columns)
         tv1["show"] = "headings"
         for column in tv1["columns"]:
-            tv1.heading(column, text=column) 
+            tv1.heading(column, text=column)
 
-        df_rows = df.to_numpy().tolist() # turns the dataframe into a list of lists
+        df_rows = df.to_numpy().tolist()  # turns the dataframe into a list of lists
         for row in df_rows:
-            tv1.insert("", "end", values=row) # inserts each list into the treeview. 
+            # inserts each list into the treeview.
+            tv1.insert("", "end", values=row)
         self.tree.mainloop()
-        
 
     def call_tree(self):
         """Call the function to Set up the treeview to display DataFrame"""
         self._setup_treeview()
-        
-    
+
     def _on_enter_pressed(self, event):
         """
         This function is used to get the response of query on press of the send button or on Enter key
@@ -727,7 +743,6 @@ class ChatApp:
     def feedback(self):
         self._setup_feedback()
 
-
     def encode(self):
         """
         On clicking input_csv button this function is called. It takes in no parameters.
@@ -739,26 +754,29 @@ class ChatApp:
         try:
             file1 = filedialog.askopenfile(
                 defaultextension=".csv",
-                filetypes=[("Comma Separated Value", "*.csv"), ("All Files", "*.*")],
+                filetypes=[("Comma Separated Value", "*.csv"),
+                           ("All Files", "*.*")],
             )
             input_file_path = file1.name
             returned = get_csvtodb(input_file_path)
-            if (returned==-1):
+            if (returned == -1):
                 print("Can't automatically clean data")
                 msg1 = "CSV data is unclean and can't be cleaned automatically.Please do a manual cleaning and retry"
                 self.msg_entry.delete(0, END)
                 self.text_widget.configure(state=NORMAL)
                 self.text_widget.insert(END, msg1)
                 self.text_widget.configure(state=DISABLED)
-                messagebox.showerror("Information", f"CSV data in {file1.name} is unclean and can't be automatically cleaned")   
-            elif (returned==-2):
+                messagebox.showerror(
+                    "Information", f"CSV data in {file1.name} is unclean and can't be automatically cleaned")
+            elif (returned == -2):
                 print("DB connection error")
                 msg1 = "Couldn't connect to DB"
                 self.msg_entry.delete(0, END)
                 self.text_widget.configure(state=NORMAL)
                 self.text_widget.insert(END, msg1)
                 self.text_widget.configure(state=DISABLED)
-                messagebox.showerror("Information", "Could not connect to to Database")
+                messagebox.showerror(
+                    "Information", "Could not connect to to Database")
             else:
                 print(input_file_path)
                 file_name = Path(input_file_path).stem
@@ -794,7 +812,8 @@ class ChatApp:
                             )
                         )
                         f.write('      "responses" : [\n')
-                        f.write('        "{0}Visual_Create"\n'.format(file_name))
+                        f.write(
+                            '        "{0}Visual_Create"\n'.format(file_name))
                         f.write("      ]\n")
                         f.write("    }\n")
                         f.write("\n")
