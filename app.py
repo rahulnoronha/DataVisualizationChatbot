@@ -506,7 +506,7 @@ class ChatApp:
                             print(e)
                         else:
                             parameters1 = parameters[0:parameters.find('Distribution')]
-                            head = parameters[len(parameters1)+len(' where '):parameters.find(' is ')]
+                            head = parameters[len(parameters1)+len('Distribution where '):parameters.find(' is ')]
                             query = parameters[parameters.find(' is ')+3:].strip()
                             input_vars += list(parameters1.split("wise"))
                             input_vars[0] = "Scatterplot "+input_vars[0].strip()
