@@ -431,6 +431,7 @@ class ChatApp:
 
         Plot_name Indep vars list vs Dependent vars list
         """
+        self._newdf = self._df
         parameters = self.msg_entry1.get()
         print(parameters)
         flag1 = 0
@@ -467,8 +468,7 @@ class ChatApp:
             if(' by ' in parameters):
                 if(' where ' in parameters and ' is ' in parameters):
                     parameters1 = parameters[0:parameters.find(' where ')]
-                    head = parameters[len(parameters1) +
-                                      len(' where '):parameters.find(' is ')]
+                    head = parameters[len(parameters1) + len(' where '):parameters.find(' is ')]
                     query = parameters[parameters.find(' is ')+3:].strip()
                     input_vars += list(parameters1.split("by"))
                     temp = input_vars[0].strip()
@@ -476,8 +476,8 @@ class ChatApp:
                     input_vars[1] = temp.strip()
                     parameters = input_vars[0]+" vs " + input_vars[1]
                     if head.lower() in headers:
-                        self._df = self._df[self._df[head.lower()] == query]
-                        print(self._df)
+                        self._newdf = self._df[self._df[head.lower()] == query]
+                        print(self._newdf)
                     else:
                         pass
                 else:
@@ -487,42 +487,59 @@ class ChatApp:
                     input_vars[1] = temp.strip()
                     parameters = input_vars[0]+" vs " + input_vars[1]
             elif(' wise ' in parameters):
-                if('distribution' in parameters):
+                if('distribution' in parameters or 'Distibution' in parameters):
                     if(' where ' in parameters and ' is ' in parameters):
-                        parameters1 = parameters[0:parameters.find(
-                            'distribution')]
-                        head = parameters[len(
-                            parameters1)+len(' where '):parameters.find(' is ')]
-                        query = parameters[parameters.find(' is ')+3:].strip()
-                        input_vars += list(parameters1.split("wise"))
-                        input_vars[0] = "Scatterplot "+input_vars[0].strip()
-                        input_vars[1] = input_vars[1].strip()
-                        parameters = input_vars[0]+" vs " + input_vars[1]
-                        if head.lower() in headers:
-                            self._df = self._df[self._df[head.lower()]
-                                                == query]
-                            print(self._df)
+                        try:
+                            parameters1 = parameters[0:parameters.find('distribution')]
+                            head = parameters[len(parameters1)+len('distribution where '):parameters.find(' is ')]
+                            query = parameters[parameters.find(' is ')+3:].strip()
+                            input_vars += list(parameters1.split("wise"))
+                            input_vars[0] = "Scatterplot "+input_vars[0].strip()
+                            input_vars[1] = input_vars[1].strip()
+                            parameters = input_vars[0]+" vs " + input_vars[1]
+                            if head.lower() in headers:
+                                self._newdf = self._df[self._df[head.lower()]== query]
+                                print(self._newdf)
+                            else:
+                                pass
+                        except Exception as e:
+                            print(e)
                         else:
-                            pass
+                            parameters1 = parameters[0:parameters.find('Distribution')]
+                            head = parameters[len(parameters1)+len(' where '):parameters.find(' is ')]
+                            query = parameters[parameters.find(' is ')+3:].strip()
+                            input_vars += list(parameters1.split("wise"))
+                            input_vars[0] = "Scatterplot "+input_vars[0].strip()
+                            input_vars[1] = input_vars[1].strip()
+                            parameters = input_vars[0]+" vs " + input_vars[1]
+                            if head.lower() in headers:
+                                self._newdf = self._df[self._df[head.lower()]== query]
+                                print(self._newdf)
+                            else:
+                                pass
                     else:
-                        parameters = parameters[0:parameters.find(
+                        try:
+                            parameters = parameters[0:parameters.find(
                             'distribution')]
+                        except Exception as e:
+                            print(e)
+                        else:
+                            parameters = parameters[0:parameters.find('Distribution')]
                         input_vars += list(parameters.split("wise"))
                         input_vars[0] = "Scatterplot "+input_vars[0].strip()
                         input_vars[1] = input_vars[1].strip()
                         parameters = input_vars[0]+" vs " + input_vars[1]
                 elif(' where ' in parameters and ' is ' in parameters):
                     parameters1 = parameters[0:parameters.find(' where ')]
-                    head = parameters[len(parameters1) +
-                                      len(' where '):parameters.find(' is ')]
+                    head = parameters[len(parameters1) +len(' where '):parameters.find(' is ')]
                     query = parameters[parameters.find(' is ')+3:].strip()
                     input_vars += list(parameters1.split("wise"))
                     input_vars[0] = "Bar_chart "+input_vars[0].strip()
                     input_vars[1] = input_vars[1].strip()
                     parameters = input_vars[0]+" vs " + input_vars[1]
                     if head.lower() in headers:
-                        self._df = self._df[self._df[head.lower()] == query]
-                        print(self._df)
+                        self._newdf = self._df[self._df[head.lower()] == query]
+                        print(self._newdf)
                     else:
                         pass
                 else:
@@ -599,7 +616,7 @@ class ChatApp:
                 dep_variable = input_vars[num_of_independent + 2:]
                 print("The independent variables are\n", ind_variable)
                 print("The dependent variables are \n", dep_variable)
-                df = self._df
+                df = self._newdf
                 try:
                     if chart_type == 1:
                         plt.style.use("seaborn")
