@@ -487,9 +487,9 @@ class ChatApp:
                     input_vars[1] = temp.strip()
                     parameters = input_vars[0]+" vs " + input_vars[1]
             elif(' wise ' in parameters):
-                if('distribution' in parameters or 'Distibution' in parameters):
+                if('distribution' in parameters or 'Distribution' in parameters):
                     if(' where ' in parameters and ' is ' in parameters):
-                        try:
+                        if('distribution' in parameters):
                             parameters1 = parameters[0:parameters.find('distribution')]
                             head = parameters[len(parameters1)+len('distribution where '):parameters.find(' is ')]
                             query = parameters[parameters.find(' is ')+3:].strip()
@@ -502,8 +502,6 @@ class ChatApp:
                                 print(self._newdf)
                             else:
                                 pass
-                        except Exception as e:
-                            print(e)
                         else:
                             parameters1 = parameters[0:parameters.find('Distribution')]
                             head = parameters[len(parameters1)+len('Distribution where '):parameters.find(' is ')]
@@ -518,11 +516,8 @@ class ChatApp:
                             else:
                                 pass
                     else:
-                        try:
-                            parameters = parameters[0:parameters.find(
-                            'distribution')]
-                        except Exception as e:
-                            print(e)
+                        if('distribution' in parameters):
+                            parameters = parameters[0:parameters.find('distribution')]
                         else:
                             parameters = parameters[0:parameters.find('Distribution')]
                         input_vars += list(parameters.split("wise"))
