@@ -26,6 +26,10 @@ def get_csvtodb(filename):
     #Cleaning the DataFrame
     #Making headers consistent using list comprehension
     df.columns = [c.strip().lower().replace(' ', '_') for c in df.columns]
+    df.dropna(axis=1, how='all',inplace=True)
+    df.fillna(method ="ffill",inplace=True)
+    df.fillna(method ="bfill",inplace=True)
+    
   
     try:
         dbase = df.to_sql(name,postgreSQLconnection,if_exists='fail')
