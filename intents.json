@@ -42,5 +42,15 @@
 ,{"tag" : "whereabouts","patterns" : ["How are you doing?","Are you doing well?", "Are you doing fine?"],"responses" :["I am fine. Thank you!","I am doing well, how are you?"]}
 ,{"tag" : "feeling_response","patterns" : ["I am fine.","I am doing well.","I am good."],"responses" :["That's great!","Awesome. Glad you are doing well."]}
 ,{"tag" : "feeling_dull_response", "patterns":["I am not doing great.","I am having a bad day.","Not okay.","Poorly."],"responses":["Here is a joke to cheer you up. Why did the chicken cross the road? To get to the other side!","Here is a joke to cheer you up. Why did the fish cross the road? To find Nemo!"]}
+,{
+      "tag" : "superstore_dataset2011-2015",
+      "patterns" : [
+        "superstore_dataset2011-2015 data",
+         "Show me a visualization of superstore_dataset2011-2015"
+      ],      "responses" : [
+        "superstore_dataset2011-2015Visual_Create"
+      ]
+    }
+
   ]
 }
